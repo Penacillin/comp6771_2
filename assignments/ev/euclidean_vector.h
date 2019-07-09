@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <list>
 #include <utility>
 
 
@@ -25,12 +26,33 @@ class EuclideanVector {
   EuclideanVector(const EuclideanVector&);
   EuclideanVector(EuclideanVector&&) noexcept;
 
-  int GetNumDimensions() noexcept;
+  double at(int) const;
+  double& at(int);
+  EuclideanVector CreateUnitVector() const;
+  double GetEuclideanNorm() const;
+  int GetNumDimensions() const noexcept;
 
 
-  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
-
+  EuclideanVector& operator=(const EuclideanVector& o) noexcept;
   EuclideanVector& operator=(EuclideanVector&& o) noexcept;
+  double& operator[](int index) noexcept;
+  const double& operator[](int index) const noexcept;
+  EuclideanVector& operator+=(const EuclideanVector&);
+  EuclideanVector& operator-=(const EuclideanVector&);
+  EuclideanVector& operator*=(const double) noexcept;
+  EuclideanVector& operator/=(const double);
+  explicit operator std::vector<double>() noexcept;
+  explicit operator std::list<double>() noexcept;
+
+  friend bool operator==(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
+  friend bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
+  friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend EuclideanVector operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend EuclideanVector operator/(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend EuclideanVector operator*(const EuclideanVector& lhs, double) noexcept;
+  friend EuclideanVector operator/(const EuclideanVector& lhs, double);
+  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) noexcept;
 
  private:
   std::unique_ptr<double[]> magnitudes_;
