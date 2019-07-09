@@ -18,20 +18,20 @@ class EuclideanVectorError : public std::exception {
 
 class EuclideanVector {
  public:
-  explicit EuclideanVector(int i);
-  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
-  explicit EuclideanVector(int dimensions = 0);
+  explicit EuclideanVector(int dimensions = 1);
   EuclideanVector(int dimensions, double magnitude);
   EuclideanVector(std::vector<double>::const_iterator start,
                   std::vector<double>::const_iterator end);
   EuclideanVector(const EuclideanVector&);
-  EuclideanVector(EuclideanVector&&);
+  EuclideanVector(EuclideanVector&&) noexcept;
 
-  EuclideanVector operator=(EuclideanVector&& o) noexcept {
-    magnitudes_ = std::move(o.magnitudes_);
-    size_ = o.size_;
-    o.size_ = 0;
-  }
+  int GetNumDimensions() noexcept;
+
+
+  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
+
+  EuclideanVector& operator=(EuclideanVector&& o) noexcept;
+
  private:
   std::unique_ptr<double[]> magnitudes_;
   int size_;
