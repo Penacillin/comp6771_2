@@ -222,6 +222,8 @@ std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) noexcept {
   for (int i = 0; i < v.size_ - 1; ++i) {
     os << v.magnitudes_[i] << " ";
   }
-  os << v.magnitudes_[v.size_-1] << "]";
+  if (v.size_ > 0)
+    os << v.magnitudes_[v.size_-1];
+  os << "]";
   return os;
 }

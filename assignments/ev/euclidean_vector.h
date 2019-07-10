@@ -38,8 +38,8 @@ class EuclideanVector {
   double& operator[](int index) noexcept;
   const double& operator[](int index) const noexcept;
   EuclideanVector& operator+=(const EuclideanVector&);
-  EuclideanVector& operator-=(const EuclideanVector&);
   EuclideanVector& operator*=(const double) noexcept;
+  EuclideanVector& operator-=(const EuclideanVector&);
   EuclideanVector& operator/=(const double);
   explicit operator std::vector<double>() noexcept;
   explicit operator std::list<double>() noexcept;
