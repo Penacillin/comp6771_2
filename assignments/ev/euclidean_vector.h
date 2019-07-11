@@ -48,9 +48,10 @@ class EuclideanVector {
   friend bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
   friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs);
-  friend EuclideanVector operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator/(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator*(const EuclideanVector& lhs, double) noexcept;
+  friend EuclideanVector operator*(double, const EuclideanVector& rhs) noexcept;
   friend EuclideanVector operator/(const EuclideanVector& lhs, double);
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) noexcept;
 
