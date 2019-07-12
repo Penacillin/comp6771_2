@@ -25,8 +25,8 @@ EuclideanVector::EuclideanVector(int dimensions, double magnitude)
   }
 }
 
-EuclideanVector::EuclideanVector(std::vector<double>::const_iterator start,
-                                 std::vector<double>::const_iterator end)
+EuclideanVector::EuclideanVector(const std::vector<double>::const_iterator start,
+                                 const std::vector<double>::const_iterator end)
     : size_(end-start) {
   magnitudes_ = std::make_unique<double[]>(size_);
   int i = 0;

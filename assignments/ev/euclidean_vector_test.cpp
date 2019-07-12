@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>
 
 #include "assignments/ev/euclidean_vector.h"
 
@@ -108,8 +109,8 @@ SCENARIO("Euclidean vectors can be created by various initialiization methods an
   }
 }
 
-SCENARIO("EuclideanVectors can be modified by changing specific dimensions or byapplying operations"
-          " to") {
+SCENARIO("EuclideanVectors can be modified by changing specific dimensions or"
+          " by applying operations to them") {
   GIVEN("A vector with values (1,2,2.5,5)") {
     std::vector<double> vals{1, 2, 2.5, 5};
     WHEN("An euclideanVector is constructed using these values") {
@@ -217,6 +218,124 @@ SCENARIO("EuclideanVectors can be modified by changing specific dimensions or by
             }
           }
         }
+      }
+    }
+  }
+}
+
+SCENARIO("We can apply operations to existing EuclideanVectors to create new ones") {
+  GIVEN("An EuclideanVector with values (2, 3, 2.5)") {
+    std::vector<double> vals = {2, 3, 2.5};
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+      
+    WHEN("We multiply the euclideanVector by the value (2.5)") {
+      EuclideanVector res = euclideanVector * 2.5;
+      
+      THEN("the new EuclideanVector will have magnitudes (5, 7.5, 6.25)") {
+        REQUIRE(res.GetNumDimensions() == 3);
+
+        REQUIRE(dblEqual(res[0], 5));
+        REQUIRE(dblEqual(res[1], 7.5));
+        REQUIRE(dblEqual(res[2], 6.25));
+      }
+    }
+
+    WHEN("We multiply the value (2.5) by the EuclideanVector") {
+      
+      EuclideanVector res = 2.5*euclideanVector;
+      
+      THEN("the new EuclideanVector will have magnitudes (5, 7.5, 6.25)") {
+        REQUIRE(res.GetNumDimensions() == 3);
+
+        REQUIRE(dblEqual(res[0], 5));
+        REQUIRE(dblEqual(res[1], 7.5));
+        REQUIRE(dblEqual(res[2], 6.25));
+      }
+    }
+
+    WHEN("We divide the euclideanVector by 2") {
+      EuclideanVector res = euclideanVector / 2;
+
+      THEN("the new EuclideanVector will have magnitudes (1, 1.5, 1.25)") {
+        REQUIRE(res.GetNumDimensions() == 3);
+
+        REQUIRE(dblEqual(res[0], 1));
+        REQUIRE(dblEqual(res[1], 1.5));
+        REQUIRE(dblEqual(res[2], 1.25));
+      }
+    }
+
+    AND_GIVEN("Another vector with the same number of dimensions and values"
+                "1, 2, 1.5)") {
+      std::vector<double> vals = {1, 2, 1.5};
+
+      EuclideanVector euclideanVector2 = EuclideanVector(vals.begin(), vals.end());
+
+      WHEN("We add the two vectors together") {
+        EuclideanVector res = euclideanVector + euclideanVector2;
+
+        THEN("We will have a new vector which is a element wise sum (3, 5, 4)") {
+          REQUIRE(dblEqual(res[0], 3));
+          REQUIRE(dblEqual(res[1], 5));
+          REQUIRE(dblEqual(res[2], 4));
+        }
+      }
+
+      WHEN("We substract the second vector from the first one") {
+        EuclideanVector res = euclideanVector - euclideanVector2;
+
+        THEN("We will have a new vector which is a element wise substraction (1,1,1)") {
+          REQUIRE(dblEqual(res[0], 1));
+          REQUIRE(dblEqual(res[1], 1));
+          REQUIRE(dblEqual(res[2], 1));
+        }
+      }
+
+      WHEN("We call the CreateUnitVector function the first one") {
+        EuclideanVector res = euclideanVector.CreateUnitVector();
+        std::cout << std::setprecision(16) << res << std::endl;
+        THEN("We will have a new vector which is a unit vector of the first one(1,1,1)") {
+          REQUIRE(dblEqual(res.GetEuclideanNorm(), 1));
+          REQUIRE(dblEqual(res[0], 0.4558423058385518));
+          REQUIRE(dblEqual(res[1], 0.6837634587578276));
+          REQUIRE(dblEqual(res[2], 0.5698028822981898));
+        }
+      }
+
+      WHEN("We multiply (dot product) the two vectors") {
+        double res = euclideanVector * euclideanVector2;
+          // std::cout << res << std::endl;
+
+        THEN("We will have the dot product of the two vectors") {
+          REQUIRE(dblEqual(res, 11.75));
+        }
+      }
+    }
+  }
+}
+
+SCENARIO("We can compare two vectors for equality and inequality") {
+  GIVEN("three vectors, two which are the same and two which are different") {
+    std::vector<double> vals = {1, 2, 1.5};
+    std::vector<double> vals2 = {1, 3, 1.5};
+
+    EuclideanVector euclideanVector1 = EuclideanVector(vals.begin(), vals.end());
+    EuclideanVector euclideanVector2 = EuclideanVector(vals.begin(), vals.end());
+    EuclideanVector euclideanVector3 = EuclideanVector(vals2.begin(), vals2.end());
+
+    WHEN("We test for equality between the two equal vectors") {
+      bool res = euclideanVector1 == euclideanVector2;
+
+      THEN("The result will be true") {
+        REQUIRE(res == true);
+      }
+    }
+
+    WHEN("We test for equality between the two unequal vectors") {
+      bool res = euclideanVector1 == euclideanVector3;
+
+      THEN("The result will be false") {
+        REQUIRE(res == false);
       }
     }
   }

@@ -21,8 +21,8 @@ class EuclideanVector {
  public:
   explicit EuclideanVector(int dimensions = 1);
   EuclideanVector(int dimensions, double magnitude);
-  EuclideanVector(std::vector<double>::const_iterator start,
-                  std::vector<double>::const_iterator end);
+  EuclideanVector(const std::vector<double>::const_iterator start,
+                  const std::vector<double>::const_iterator end);
   EuclideanVector(const EuclideanVector&);
   EuclideanVector(EuclideanVector&&) noexcept;
 
