@@ -241,7 +241,7 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new res
     }
 
     WHEN("We multiply the value (2.5) by the EuclideanVector") {
-      EuclideanVector res = 2.5*euclideanVector;
+      EuclideanVector res = 2.5 * euclideanVector;
 
       THEN("the new EuclideanVector will have magnitudes (5, 7.5, 6.25)") {
         REQUIRE(res.GetNumDimensions() == 3);
@@ -266,7 +266,6 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new res
 
     WHEN("We get the Euclidean Normal of the EuclideanVector") {
       double res = euclideanVector.GetEuclideanNorm();
-        // std::cout << res << std::endl;
 
       THEN("We will have Euclidean Normal sqrt(2^2 + 3^2 + 2.5^) = 4.38748219") {
         REQUIRE(dblEqual(res, 4.38748219));
@@ -301,7 +300,6 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new res
 
       WHEN("We call the CreateUnitVector function the first one") {
         EuclideanVector res = euclideanVector.CreateUnitVector();
-        std::cout << std::setprecision(16) << res << std::endl;
         THEN("We will have a new vector which is a unit vector of the first one(1,1,1)") {
           REQUIRE(dblEqual(res.GetEuclideanNorm(), 1));
           REQUIRE(dblEqual(res[0], 0.4558423058385518));
@@ -312,14 +310,44 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new res
 
       WHEN("We multiply (dot product) the two vectors") {
         double res = euclideanVector * euclideanVector2;
-          // std::cout << res << std::endl;
 
         THEN("We will have the dot product of the two vectors") {
           REQUIRE(dblEqual(res, 11.75));
         }
       }
+    }
+  }
 
-      
+  GIVEN("Two EuclideanVector with 0 dimensions") {
+    EuclideanVector zeroVector = EuclideanVector(0);
+    EuclideanVector zeroVector2 = EuclideanVector(0);
+
+    WHEN("We try to add zeroVector2 to zeroVector") {
+      zeroVector += zeroVector;
+      THEN("zeroVector should continue to be a 0 dimension Vector") {
+        REQUIRE(zeroVector.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to subtract zeroVector2 from zeroVector") {
+      zeroVector -= zeroVector;
+      THEN("zeroVector should continue to be a 0 dimension Vector") {
+        REQUIRE(zeroVector.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to add zeroVector2 from zeroVector to create a new EuclideanVector") {
+      EuclideanVector res = zeroVector + zeroVector;
+      THEN("New vector should be a 0 dimension Vector") {
+        REQUIRE(res.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to subtract zeroVector2 from zeroVector to create a new EuclideanVector") {
+      EuclideanVector res = zeroVector - zeroVector;
+      THEN("New vector should be a 0 dimension Vector") {
+        REQUIRE(res.GetNumDimensions() == 0);
+      }
     }
   }
 }
@@ -456,11 +484,11 @@ SCENARIO("Given invalid arguments, an EuclideanVector will throw the "
         " EuclideanVector object");
     }
 
-    WHEN("We try to divide the Vector by 0") {
+    WHEN("We try to divide the Vector by 0 operator/=") {
       REQUIRE_THROWS_WITH(euclideanVector /= 0, "Invalid vector division by 0");
     }
 
-    WHEN("We try to divide the Vector by 0") {
+    WHEN("We try to divide the Vector by 0 using operator/") {
       REQUIRE_THROWS_WITH(euclideanVector / 0, "Invalid vector division by 0");
     }
 
