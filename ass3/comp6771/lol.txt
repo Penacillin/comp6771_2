@@ -1,0 +1,704 @@
+Loading: 
+Loading: 0 packages loaded
+Analyzing: target //assignments/dg:client (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //assignments/dg:client (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+[1 / 4] [Prepa] BazelWorkspaceStatusAction stable-status.txt ... (2 actions, 0 running)
+ERROR: /mnt/c/Users/nevin/source/repos/comp6771_2/ass3/comp6771/assignments/dg/BUILD:7:1: C++ compilation of rule '//assignments/dg:client' failed (Exit 1) gcc failed: error executing command /usr/bin/gcc -U_FORTIFY_SOURCE -fstack-protector -Wall -Wunused-but-set-parameter -Wno-free-nonheap-object -fno-omit-frame-pointer '-std=c++0x' -MD -MF ... (remaining 26 argument(s) skipped)
+
+Use --sandbox_debug to see verbose messages from the sandbox
+In file included from ./assignments/dg/graph.h:32:0,
+                 from assignments/dg/client.cpp:4:
+./assignments/dg/graph.tpp:10:18: error: invalid declarator before '(' token
+ gdwg::Graph<N, E>(const typename std::vector<N>::const_iterator start,
+                  ^
+./assignments/dg/graph.tpp:16:67: error: expected ')' before ',' token
+ gdwg::Graph<N, E>(std::vector<std::tuple<N, N, E>>::const_iterator,
+                                                                   ^
+./assignments/dg/graph.tpp:22:18: error: invalid declarator before '(' token
+ gdwg::Graph<N, E>(std::initializer_list<N>) {
+                  ^
+./assignments/dg/graph.tpp:27:18: error: invalid declarator before '(' token
+ gdwg::Graph<N, E>(const gdwg::Graph<N, E>&) {
+                  ^
+./assignments/dg/graph.tpp:32:18: error: invalid declarator before '(' token
+ gdwg::Graph<N, E>(gdwg::Graph<N, E>&&) {
+                  ^
+./assignments/dg/graph.tpp:37:7: error: scope 'gdwg' before '~' is not a class-name
+ gdwg::~Graph<N, E>() {
+       ^
+assignments/dg/client.cpp: In function 'int main()':
+assignments/dg/client.cpp:10:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertNode'
+   g.InsertNode("hello");
+     ^~~~~~~~~~
+assignments/dg/client.cpp:11:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertNode'
+   g.InsertNode("how");
+     ^~~~~~~~~~
+assignments/dg/client.cpp:12:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertNode'
+   g.InsertNode("are");
+     ^~~~~~~~~~
+assignments/dg/client.cpp:13:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertNode'
+   g.InsertNode("you?");
+     ^~~~~~~~~~
+assignments/dg/client.cpp:15:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("hello", "how", 5);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:16:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("hello", "are", 8);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:17:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("hello", "are", 2);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:19:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("how", "you?", 1);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:20:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("how", "hello", 4);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:22:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertEdge'
+   g.InsertEdge("are", "you?", 3);
+     ^~~~~~~~~~
+assignments/dg/client.cpp:24:13: error: no match for 'operator<<' (operand types are 'std::ostream {aka std::basic_ostream<char>}' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>')
+   std::cout << g << '\n';
+   ~~~~~~~~~~^~~~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:108:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:108:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__ostream_type& (*)(std::basic_ostream<char>::__ostream_type&) {aka std::basic_ostream<char>& (*)(std::basic_ostream<char>&)}'
+/usr/include/c++/7/ostream:117:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]
+       operator<<(__ios_type& (*__pf)(__ios_type&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:117:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__ios_type& (*)(std::basic_ostream<char>::__ios_type&) {aka std::basic_ios<char>& (*)(std::basic_ios<char>&)}'
+/usr/include/c++/7/ostream:127:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(ios_base& (*__pf) (ios_base&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:127:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::ios_base& (*)(std::ios_base&)'
+/usr/include/c++/7/ostream:166:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:166:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long int'
+/usr/include/c++/7/ostream:170:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:170:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long unsigned int'
+/usr/include/c++/7/ostream:174:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(bool) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(bool __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:174:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'bool'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:91:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(short int) [with _CharT = char; _Traits = std::char_traits<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:91:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'short int'
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:181:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(short unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned short __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:181:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'short unsigned int'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:105:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(int) [with _CharT = char; _Traits = std::char_traits<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:105:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'int'
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:192:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned int __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:192:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'unsigned int'
+/usr/include/c++/7/ostream:201:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:201:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long long int'
+/usr/include/c++/7/ostream:205:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned long long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:205:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long long unsigned int'
+/usr/include/c++/7/ostream:220:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(double __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:220:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'double'
+/usr/include/c++/7/ostream:224:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(float) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(float __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:224:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'float'
+/usr/include/c++/7/ostream:232:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long double __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:232:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long double'
+/usr/include/c++/7/ostream:245:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(const void* __p)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:245:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'const void*'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:119:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:119:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__streambuf_type* {aka std::basic_streambuf<char>*}'
+In file included from /usr/include/c++/7/memory:81:0,
+                 from ./assignments/dg/graph.h:4,
+                 from assignments/dg/client.cpp:4:
+/usr/include/c++/7/bits/shared_ptr.h:66:5: note: candidate: template<class _Ch, class _Tr, class _Tp, __gnu_cxx::_Lock_policy _Lp> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::__shared_ptr<_Tp, _Lp>&)
+     operator<<(std::basic_ostream<_Ch, _Tr>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/bits/shared_ptr.h:66:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::__shared_ptr<_Tp, _Lp>'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:682:5: note: candidate: template<class _Ostream, class _Tp> typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type std::operator<<(_Ostream&&, const _Tp&)
+     operator<<(_Ostream&& __os, const _Tp& __x)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:682:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/ostream: In substitution of 'template<class _Ostream, class _Tp> typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:24:16:   required from here
+/usr/include/c++/7/ostream:682:5: error: no type named 'type' in 'struct std::enable_if<false, std::basic_ostream<char>&>'
+/usr/include/c++/7/ostream:574:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:574:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const unsigned char*'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:569:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:569:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const signed char*'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:556:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:556:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const char*'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:321:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const char*'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:539:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:539:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   mismatched types 'const _CharT*' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:519:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)
+     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:519:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'unsigned char'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:514:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)
+     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:514:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'signed char'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:508:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)
+     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:508:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'char'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:502:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:502:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'char'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:497:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:497:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   deduced conflicting types for parameter '_CharT' ('char' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>')
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/bits/ios_base.h:46:0,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/system_error:217:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::error_code&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os, const error_code& __e)
+     ^~~~~~~~
+/usr/include/c++/7/system_error:217:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   cannot convert 'g' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const std::error_code&'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6275:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6275:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>'
+   std::cout << g << '\n';
+                ^
+In file included from /usr/include/c++/7/bits/basic_string.h:48:0,
+                 from /usr/include/c++/7/string:52,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/string_view:559:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, std::basic_string_view<_CharT, _Traits>)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/string_view:559:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:24:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::basic_string_view<_CharT, _Traits>'
+   std::cout << g << '\n';
+                ^
+assignments/dg/client.cpp:28:13: error: no match for 'operator<<' (operand types are 'std::ostream {aka std::basic_ostream<char>}' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>')
+   std::cout << g2 << "\n";
+   ~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:108:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:108:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__ostream_type& (*)(std::basic_ostream<char>::__ostream_type&) {aka std::basic_ostream<char>& (*)(std::basic_ostream<char>&)}'
+/usr/include/c++/7/ostream:117:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]
+       operator<<(__ios_type& (*__pf)(__ios_type&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:117:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__ios_type& (*)(std::basic_ostream<char>::__ios_type&) {aka std::basic_ios<char>& (*)(std::basic_ios<char>&)}'
+/usr/include/c++/7/ostream:127:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(ios_base& (*__pf) (ios_base&))
+       ^~~~~~~~
+/usr/include/c++/7/ostream:127:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::ios_base& (*)(std::ios_base&)'
+/usr/include/c++/7/ostream:166:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:166:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long int'
+/usr/include/c++/7/ostream:170:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:170:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long unsigned int'
+/usr/include/c++/7/ostream:174:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(bool) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(bool __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:174:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'bool'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:91:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(short int) [with _CharT = char; _Traits = std::char_traits<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:91:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'short int'
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:181:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(short unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned short __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:181:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'short unsigned int'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:105:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(int) [with _CharT = char; _Traits = std::char_traits<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:105:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'int'
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:192:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned int __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:192:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'unsigned int'
+/usr/include/c++/7/ostream:201:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:201:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long long int'
+/usr/include/c++/7/ostream:205:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(unsigned long long __n)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:205:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long long unsigned int'
+/usr/include/c++/7/ostream:220:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(double __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:220:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'double'
+/usr/include/c++/7/ostream:224:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(float) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(float __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:224:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'float'
+/usr/include/c++/7/ostream:232:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(long double __f)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:232:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'long double'
+/usr/include/c++/7/ostream:245:7: note: candidate: std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]
+       operator<<(const void* __p)
+       ^~~~~~~~
+/usr/include/c++/7/ostream:245:7: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'const void*'
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:119:5: note: candidate: std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]
+     basic_ostream<_CharT, _Traits>::
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:119:5: note:   no known conversion for argument 1 from 'gdwg::Graph<std::__cxx11::basic_string<char>, int>' to 'std::basic_ostream<char>::__streambuf_type* {aka std::basic_streambuf<char>*}'
+In file included from /usr/include/c++/7/memory:81:0,
+                 from ./assignments/dg/graph.h:4,
+                 from assignments/dg/client.cpp:4:
+/usr/include/c++/7/bits/shared_ptr.h:66:5: note: candidate: template<class _Ch, class _Tr, class _Tp, __gnu_cxx::_Lock_policy _Lp> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::__shared_ptr<_Tp, _Lp>&)
+     operator<<(std::basic_ostream<_Ch, _Tr>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/bits/shared_ptr.h:66:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::__shared_ptr<_Tp, _Lp>'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:682:5: note: candidate: template<class _Ostream, class _Tp> typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type std::operator<<(_Ostream&&, const _Tp&)
+     operator<<(_Ostream&& __os, const _Tp& __x)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:682:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/ostream: In substitution of 'template<class _Ostream, class _Tp> typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:28:16:   required from here
+/usr/include/c++/7/ostream:682:5: error: no type named 'type' in 'struct std::enable_if<false, std::basic_ostream<char>&>'
+/usr/include/c++/7/ostream:574:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:574:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const unsigned char*'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:569:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:569:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const signed char*'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:556:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)
+     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:556:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const char*'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/ostream:693:0,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/ostream.tcc:321:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+     ^~~~~~~~
+/usr/include/c++/7/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const char*'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:539:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:539:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   mismatched types 'const _CharT*' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:519:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)
+     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:519:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'unsigned char'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:514:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)
+     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:514:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'signed char'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:508:5: note: candidate: template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)
+     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:508:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'char'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:502:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:502:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'char'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/ostream:497:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)
+     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+     ^~~~~~~~
+/usr/include/c++/7/ostream:497:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   deduced conflicting types for parameter '_CharT' ('char' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>')
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/bits/ios_base.h:46:0,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/system_error:217:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::error_code&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os, const error_code& __e)
+     ^~~~~~~~
+/usr/include/c++/7/system_error:217:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   cannot convert 'g2' (type 'gdwg::Graph<std::__cxx11::basic_string<char>, int>') to type 'const std::error_code&'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/string:52:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6275:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6275:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>'
+   std::cout << g2 << "\n";
+                ^~
+In file included from /usr/include/c++/7/bits/basic_string.h:48:0,
+                 from /usr/include/c++/7/string:52,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/string_view:559:5: note: candidate: template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, std::basic_string_view<_CharT, _Traits>)
+     operator<<(basic_ostream<_CharT, _Traits>& __os,
+     ^~~~~~~~
+/usr/include/c++/7/string_view:559:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:28:16: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::basic_string_view<_CharT, _Traits>'
+   std::cout << g2 << "\n";
+                ^~
+assignments/dg/client.cpp:33:41: error: no matching function for call to 'begin(gdwg::Graph<std::__cxx11::basic_string<char>, int>&)'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:105:37: note: candidate: template<class _Tp> const _Tp* std::begin(const std::valarray<_Tp>&)
+   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&);
+                                     ^~~~~
+/usr/include/c++/7/bits/range_access.h:105:37: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::valarray<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:104:31: note: candidate: template<class _Tp> _Tp* std::begin(std::valarray<_Tp>&)
+   template<typename _Tp> _Tp* begin(valarray<_Tp>&);
+                               ^~~~~
+/usr/include/c++/7/bits/range_access.h:104:31: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::valarray<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:87:5: note: candidate: template<class _Tp, long unsigned int _Nm> constexpr _Tp* std::begin(_Tp (&)[_Nm])
+     begin(_Tp (&__arr)[_Nm])
+     ^~~~~
+/usr/include/c++/7/bits/range_access.h:87:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   mismatched types '_Tp [_Nm]' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:58:5: note: candidate: template<class _Container> constexpr decltype (__cont.begin()) std::begin(const _Container&)
+     begin(const _Container& __cont) -> decltype(__cont.begin())
+     ^~~~~
+/usr/include/c++/7/bits/range_access.h:58:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/bits/range_access.h: In substitution of 'template<class _Container> constexpr decltype (__cont.begin()) std::begin(const _Container&) [with _Container = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:33:41:   required from here
+/usr/include/c++/7/bits/range_access.h:58:56: error: 'const class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'begin'
+     begin(const _Container& __cont) -> decltype(__cont.begin())
+                                                 ~~~~~~~^~~~~
+/usr/include/c++/7/bits/range_access.h:48:5: note: candidate: template<class _Container> constexpr decltype (__cont.begin()) std::begin(_Container&)
+     begin(_Container& __cont) -> decltype(__cont.begin())
+     ^~~~~
+/usr/include/c++/7/bits/range_access.h:48:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/bits/range_access.h: In substitution of 'template<class _Container> constexpr decltype (__cont.begin()) std::begin(_Container&) [with _Container = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:33:41:   required from here
+/usr/include/c++/7/bits/range_access.h:48:50: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'begin'
+     begin(_Container& __cont) -> decltype(__cont.begin())
+                                           ~~~~~~~^~~~~
+In file included from /usr/include/c++/7/bits/range_access.h:36:0,
+                 from /usr/include/c++/7/string:51,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/initializer_list:89:5: note: candidate: template<class _Tp> constexpr const _Tp* std::begin(std::initializer_list<_Tp>)
+     begin(initializer_list<_Tp> __ils) noexcept
+     ^~~~~
+/usr/include/c++/7/initializer_list:89:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::initializer_list<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+assignments/dg/client.cpp:33:41: error: no matching function for call to 'end(gdwg::Graph<std::__cxx11::basic_string<char>, int>&)'
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:107:37: note: candidate: template<class _Tp> const _Tp* std::end(const std::valarray<_Tp>&)
+   template<typename _Tp> const _Tp* end(const valarray<_Tp>&);
+                                     ^~~
+/usr/include/c++/7/bits/range_access.h:107:37: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'const std::valarray<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:106:31: note: candidate: template<class _Tp> _Tp* std::end(std::valarray<_Tp>&)
+   template<typename _Tp> _Tp* end(valarray<_Tp>&);
+                               ^~~
+/usr/include/c++/7/bits/range_access.h:106:31: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::valarray<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:97:5: note: candidate: template<class _Tp, long unsigned int _Nm> constexpr _Tp* std::end(_Tp (&)[_Nm])
+     end(_Tp (&__arr)[_Nm])
+     ^~~
+/usr/include/c++/7/bits/range_access.h:97:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   mismatched types '_Tp [_Nm]' and 'gdwg::Graph<std::__cxx11::basic_string<char>, int>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+In file included from /usr/include/c++/7/string:51:0,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/bits/range_access.h:78:5: note: candidate: template<class _Container> constexpr decltype (__cont.end()) std::end(const _Container&)
+     end(const _Container& __cont) -> decltype(__cont.end())
+     ^~~
+/usr/include/c++/7/bits/range_access.h:78:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/bits/range_access.h: In substitution of 'template<class _Container> constexpr decltype (__cont.end()) std::end(const _Container&) [with _Container = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:33:41:   required from here
+/usr/include/c++/7/bits/range_access.h:78:54: error: 'const class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'end'
+     end(const _Container& __cont) -> decltype(__cont.end())
+                                               ~~~~~~~^~~
+/usr/include/c++/7/bits/range_access.h:68:5: note: candidate: template<class _Container> constexpr decltype (__cont.end()) std::end(_Container&)
+     end(_Container& __cont) -> decltype(__cont.end())
+     ^~~
+/usr/include/c++/7/bits/range_access.h:68:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/bits/range_access.h: In substitution of 'template<class _Container> constexpr decltype (__cont.end()) std::end(_Container&) [with _Container = gdwg::Graph<std::__cxx11::basic_string<char>, int>]':
+assignments/dg/client.cpp:33:41:   required from here
+/usr/include/c++/7/bits/range_access.h:68:48: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'end'
+     end(_Container& __cont) -> decltype(__cont.end())
+                                         ~~~~~~~^~~
+In file included from /usr/include/c++/7/bits/range_access.h:36:0,
+                 from /usr/include/c++/7/string:51,
+                 from /usr/include/c++/7/bits/locale_classes.h:40,
+                 from /usr/include/c++/7/bits/ios_base.h:41,
+                 from /usr/include/c++/7/ios:42,
+                 from /usr/include/c++/7/ostream:38,
+                 from /usr/include/c++/7/iostream:39,
+                 from assignments/dg/client.cpp:1:
+/usr/include/c++/7/initializer_list:99:5: note: candidate: template<class _Tp> constexpr const _Tp* std::end(std::initializer_list<_Tp>)
+     end(initializer_list<_Tp> __ils) noexcept
+     ^~~
+/usr/include/c++/7/initializer_list:99:5: note:   template argument deduction/substitution failed:
+assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::initializer_list<_Tp>'
+   for (const auto& [from, to, weight] : g) {
+                                         ^
+Target //assignments/dg:client failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 1.410s, Critical Path: 1.11s
+INFO: 0 processes.
+FAILED: Build did NOT complete successfully
+FAILED: Build did NOT complete successfully

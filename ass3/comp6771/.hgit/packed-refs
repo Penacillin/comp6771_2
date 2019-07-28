@@ -1,0 +1,12 @@
+# pack-refs with: peeled fully-peeled sorted 
+a6ebc9d7309888e08d8d2b3afff96d971a2fd17a refs/remotes/origin/asan
+5ada8d3d504feae7553b88847efc6452829f4c8a refs/remotes/origin/dg2
+6d1c2b8d89512689e1d069dc62aa89d8332278b5 refs/remotes/origin/forward
+9e071374a052f5ffa3c2c1eef6c6aa124fb5dd88 refs/remotes/origin/master
+d5f7ebca992a7d522a605cf31789c1d2aa68e4ec refs/remotes/origin/polymorphism
+27eed88b37ddfc4cc2e198bdf1223ce341281ea9 refs/remotes/origin/postlecture19T2
+432f072fd898fb24e91473908ad14da5c35f6748 refs/remotes/origin/solutions
+960b0e7e485f9826298a4bd86afabb4a47a4932b refs/remotes/origin/w8tutorial
+24f6683045ebafb00191c04158faa2d8885fd078 refs/remotes/origin/week5-patch
+bf616fdd0a66902c1adc7eb52ecea075d3f20b45 refs/remotes/origin/week6
+2bea81fa3aa84cd55bc8d47510591fd52cbe49e9 refs/remotes/origin/week7
