@@ -11,6 +11,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 #include "assignments/ev/euclidean_vector.h"
 
@@ -223,14 +224,13 @@ SCENARIO("EuclideanVectors can be modified by changing specific dimensions or"
   }
 }
 
-SCENARIO("We can apply operations to existing EuclideanVectors to create new ones") {
+SCENARIO("We can apply operations to existing EuclideanVectors to create new results") {
   GIVEN("An EuclideanVector with values (2, 3, 2.5)") {
     std::vector<double> vals = {2, 3, 2.5};
     EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
-      
+
     WHEN("We multiply the euclideanVector by the value (2.5)") {
       EuclideanVector res = euclideanVector * 2.5;
-      
       THEN("the new EuclideanVector will have magnitudes (5, 7.5, 6.25)") {
         REQUIRE(res.GetNumDimensions() == 3);
 
@@ -241,9 +241,8 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new one
     }
 
     WHEN("We multiply the value (2.5) by the EuclideanVector") {
-      
-      EuclideanVector res = 2.5*euclideanVector;
-      
+      EuclideanVector res = 2.5 * euclideanVector;
+
       THEN("the new EuclideanVector will have magnitudes (5, 7.5, 6.25)") {
         REQUIRE(res.GetNumDimensions() == 3);
 
@@ -262,6 +261,14 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new one
         REQUIRE(dblEqual(res[0], 1));
         REQUIRE(dblEqual(res[1], 1.5));
         REQUIRE(dblEqual(res[2], 1.25));
+      }
+    }
+
+    WHEN("We get the Euclidean Normal of the EuclideanVector") {
+      double res = euclideanVector.GetEuclideanNorm();
+
+      THEN("We will have Euclidean Normal sqrt(2^2 + 3^2 + 2.5^) = 4.38748219") {
+        REQUIRE(dblEqual(res, 4.38748219));
       }
     }
 
@@ -293,7 +300,6 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new one
 
       WHEN("We call the CreateUnitVector function the first one") {
         EuclideanVector res = euclideanVector.CreateUnitVector();
-        std::cout << std::setprecision(16) << res << std::endl;
         THEN("We will have a new vector which is a unit vector of the first one(1,1,1)") {
           REQUIRE(dblEqual(res.GetEuclideanNorm(), 1));
           REQUIRE(dblEqual(res[0], 0.4558423058385518));
@@ -304,11 +310,43 @@ SCENARIO("We can apply operations to existing EuclideanVectors to create new one
 
       WHEN("We multiply (dot product) the two vectors") {
         double res = euclideanVector * euclideanVector2;
-          // std::cout << res << std::endl;
 
         THEN("We will have the dot product of the two vectors") {
           REQUIRE(dblEqual(res, 11.75));
         }
+      }
+    }
+  }
+
+  GIVEN("Two EuclideanVector with 0 dimensions") {
+    EuclideanVector zeroVector = EuclideanVector(0);
+    EuclideanVector zeroVector2 = EuclideanVector(0);
+
+    WHEN("We try to add zeroVector2 to zeroVector") {
+      zeroVector += zeroVector;
+      THEN("zeroVector should continue to be a 0 dimension Vector") {
+        REQUIRE(zeroVector.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to subtract zeroVector2 from zeroVector") {
+      zeroVector -= zeroVector;
+      THEN("zeroVector should continue to be a 0 dimension Vector") {
+        REQUIRE(zeroVector.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to add zeroVector2 from zeroVector to create a new EuclideanVector") {
+      EuclideanVector res = zeroVector + zeroVector;
+      THEN("New vector should be a 0 dimension Vector") {
+        REQUIRE(res.GetNumDimensions() == 0);
+      }
+    }
+
+    WHEN("We try to subtract zeroVector2 from zeroVector to create a new EuclideanVector") {
+      EuclideanVector res = zeroVector - zeroVector;
+      THEN("New vector should be a 0 dimension Vector") {
+        REQUIRE(res.GetNumDimensions() == 0);
       }
     }
   }
@@ -336,6 +374,157 @@ SCENARIO("We can compare two vectors for equality and inequality") {
 
       THEN("The result will be false") {
         REQUIRE(res == false);
+      }
+    }
+
+    WHEN("We test for inequality between the two unequal vectors") {
+      bool res = euclideanVector1 != euclideanVector3;
+
+      THEN("The result will be true") {
+        REQUIRE(res == true);
+      }
+    }
+
+    WHEN("We test for inequality between the two equal vectors") {
+      bool res = euclideanVector1 != euclideanVector2;
+
+      THEN("The result will be false") {
+        REQUIRE(res == false);
+      }
+    }
+  }
+}
+
+SCENARIO("EuclideanVectors can be printed") {
+  GIVEN("A vector with 3 magnitudes") {
+    std::vector<double> vals = {1, 2, 1.5};
+
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+
+    WHEN("The EuclideanVector is printed to a output stream") {
+      std::ostringstream os;
+      os << euclideanVector;
+
+      THEN("The output string should be '[1 2 1.5]'") {
+        REQUIRE(os.str() == "[1 2 1.5]");
+      }
+    }
+  }
+  GIVEN("A vector with 2 magnitudes") {
+    std::vector<double> vals = {1, 2};
+
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+
+    WHEN("The EuclideanVector is printed to a output stream") {
+      std::ostringstream os;
+      os << euclideanVector;
+
+      THEN("The output string should be '[1 2]'") {
+        REQUIRE(os.str() == "[1 2]");
+      }
+    }
+  }
+  GIVEN("A vector with 1 magnitude") {
+    std::vector<double> vals = {1};
+
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+
+    WHEN("The EuclideanVector is printed to a output stream") {
+      std::ostringstream os;
+      os << euclideanVector;
+
+      THEN("The output string should be '[1]'") {
+        REQUIRE(os.str() == "[1]");
+      }
+    }
+  }
+  GIVEN("A vector with 0 magnitudes") {
+    std::vector<double> vals = {};
+
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+
+    WHEN("The EuclideanVector is printed to a output stream") {
+      std::ostringstream os;
+      os << euclideanVector;
+
+      THEN("The output string should be '[]'") {
+        REQUIRE(os.str() == "[]");
+      }
+    }
+  }
+}
+
+SCENARIO("Given invalid arguments, an EuclideanVector will throw the "
+          " correct EuclideanVectorError") {
+  GIVEN("An empty EuclideanVector") {
+    EuclideanVector euclideanVector = EuclideanVector(0);
+
+    WHEN("We try to create a Unit Vector off this dimensionless Vector") {
+      REQUIRE_THROWS_WITH(euclideanVector.CreateUnitVector(), "EuclideanVector with no dimensions"
+          " does not have a unit vector");
+    }
+
+    WHEN("We try to Get Euclidean Norm off this dimensionless Vector") {
+      REQUIRE_THROWS_WITH(euclideanVector.GetEuclideanNorm(), "EuclideanVector with no dimensions"
+          " does not have a unit vector");
+    }
+  }
+
+  GIVEN("An EuclideanVector with values (2, 3, 2.5)") {
+    std::vector<double> vals = {2, 3, 2.5};
+    EuclideanVector euclideanVector = EuclideanVector(vals.begin(), vals.end());
+
+    WHEN("We try to get the index at -1") {
+      REQUIRE_THROWS_WITH(euclideanVector.at(-1), "Index -1 is not valid for this"
+        " EuclideanVector object");
+    }
+
+    WHEN("We try to get the index at 3") {
+      REQUIRE_THROWS_WITH(euclideanVector.at(3), "Index 3 is not valid for this"
+        " EuclideanVector object");
+    }
+
+    WHEN("We try to divide the Vector by 0 operator/=") {
+      REQUIRE_THROWS_WITH(euclideanVector /= 0, "Invalid vector division by 0");
+    }
+
+    WHEN("We try to divide the Vector by 0 using operator/") {
+      REQUIRE_THROWS_WITH(euclideanVector / 0, "Invalid vector division by 0");
+    }
+
+    AND_GIVEN("Another EuclideanVector with a different number of dimensions") {
+      std::vector<double> vals = {2, 3};
+      EuclideanVector euclideanVector2 = EuclideanVector(vals.begin(), vals.end());
+
+      REQUIRE(euclideanVector.GetNumDimensions() != euclideanVector2.GetNumDimensions());
+
+      WHEN("We try to add the second Vector with 2 dimensions to the Vector with 3 dimensions") {
+        REQUIRE_THROWS_WITH(euclideanVector += euclideanVector2, "Dimensions of LHS(3) and RHS(2)"
+          " do not match");
+      }
+
+      WHEN("We try to add together the two Vectors of different dimensions to create a third"
+            " Vector") {
+        REQUIRE_THROWS_WITH(euclideanVector + euclideanVector2,
+          "Dimensions of LHS(3) and RHS(2) do not match");
+      }
+
+      WHEN("We try to subtract the second Vector with 2 dimensions"
+          " from the Vector with 3 dimensions") {
+        REQUIRE_THROWS_WITH(euclideanVector -= euclideanVector2, "Dimensions of LHS(3) and RHS(2)"
+          " do not match");
+      }
+
+      WHEN("We try to subtract the second Vector with 2 dimensions"
+          " from the Vector with 3 dimensions to create a new vector") {
+        REQUIRE_THROWS_WITH(euclideanVector - euclideanVector2, "Dimensions of LHS(3) and RHS(2)"
+          " do not match");
+      }
+
+      WHEN("We try to multiply the second Vector with 2 dimensions"
+          " from the Vector with 3 dimensions to get the dot product") {
+        REQUIRE_THROWS_WITH(euclideanVector * euclideanVector2, "Dimensions of LHS(3) and RHS(2)"
+          " do not match");
       }
     }
   }

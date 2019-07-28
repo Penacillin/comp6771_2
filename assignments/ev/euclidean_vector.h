@@ -26,6 +26,8 @@ class EuclideanVector {
   EuclideanVector(const EuclideanVector&);
   EuclideanVector(EuclideanVector&&) noexcept;
 
+  ~EuclideanVector() = default;
+
   double at(int) const;
   double& at(int);
   EuclideanVector CreateUnitVector() const;
@@ -49,7 +51,6 @@ class EuclideanVector {
   friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
-  friend EuclideanVector operator/(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator*(const EuclideanVector& lhs, double) noexcept;
   friend EuclideanVector operator*(double, const EuclideanVector& rhs) noexcept;
   friend EuclideanVector operator/(const EuclideanVector& lhs, double);

@@ -7,10 +7,10 @@
 #include <ostream>
 #include <utility>
 #include <iostream>
+#include <sstream>
 
 EuclideanVector::EuclideanVector(int dimensions)
     : size_(dimensions) {
-  std::cout << "Vector created by dimensions" << std::endl;
   magnitudes_ = std::make_unique<double[]>(dimensions);
   for (int i = 0; i < size_; ++i) {
     magnitudes_[i] = 0.0;
@@ -37,7 +37,6 @@ EuclideanVector::EuclideanVector(const std::vector<double>::const_iterator start
 
 EuclideanVector::EuclideanVector(const EuclideanVector& rhs)
     : size_(rhs.size_) {
-  std::cout << "Called the copy constructor" << std::endl;
   magnitudes_ = std::make_unique<double[]>(size_);
   std::copy(rhs.magnitudes_.get(), rhs.magnitudes_.get() + rhs.size_, magnitudes_.get());
 }
@@ -45,7 +44,6 @@ EuclideanVector::EuclideanVector(const EuclideanVector& rhs)
 EuclideanVector::EuclideanVector(EuclideanVector&& o) noexcept
     : magnitudes_{std::move(o.magnitudes_)},
       size_{o.size_} {
-  std::cout << "Called the move constructor" << std::endl;
   o.size_ = 0;
 }
 
@@ -75,26 +73,30 @@ int EuclideanVector::GetNumDimensions() const noexcept {
 }
 
 double EuclideanVector::at(int index) const {
-  if (index < 0 || index >= size_)
-    throw EuclideanVectorError("Index X is not valid for this EuclideanVector object");
+  if (index < 0 || index >= size_) {
+    std::ostringstream oss;
+    oss << "Index " << index << " is not valid for this EuclideanVector object";
+    throw EuclideanVectorError(oss.str());
+  }
   return magnitudes_[index];
 }
 
 double& EuclideanVector::at(int index) {
-  if (index < 0 || index >= size_)
-    throw EuclideanVectorError("Index X is not valid for this EuclideanVector object");
+  if (index < 0 || index >= size_) {
+    std::ostringstream oss;
+    oss << "Index " << index << " is not valid for this EuclideanVector object";
+    throw EuclideanVectorError(oss.str());
+  }
   return magnitudes_[index];
 }
 
 EuclideanVector& EuclideanVector::operator=(const EuclideanVector& o) noexcept {
-  std::cout << "calling copy operator " << std::endl;
   size_ = o.size_;
   std::copy(o.magnitudes_.get(), o.magnitudes_.get() + o.size_, magnitudes_.get());
   return *this;
 }
 
 EuclideanVector& EuclideanVector::operator=(EuclideanVector&& o) noexcept {
-  std::cout << "calling move operator " << std::endl;
   magnitudes_ = std::move(o.magnitudes_);
   size_ = o.size_;
   o.size_ = 0;
@@ -112,23 +114,30 @@ const double& EuclideanVector::operator[](int index) const noexcept {
 }
 
 EuclideanVector& EuclideanVector::operator+=(const EuclideanVector& o) {
-  if (this->size_ != o.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
+  if (this->size_ != o.size_) {
+    std::ostringstream oss;
+    oss << "Dimensions of LHS(" << this->size_ << ") and RHS(" << o.size_
+        << ") do not match";
+    throw EuclideanVectorError(oss.str());
+  }
   for (int i = 0; i < size_; ++i)
     magnitudes_[i] += o.magnitudes_[i];
   return *this;
 }
 
 EuclideanVector& EuclideanVector::operator-=(const EuclideanVector& o) {
-  if (this->size_ != o.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
+  if (this->size_ != o.size_) {
+    std::ostringstream oss;
+    oss << "Dimensions of LHS(" << this->size_ << ") and RHS(" << o.size_
+        << ") do not match";
+    throw EuclideanVectorError(oss.str());
+  }
   for (int i = 0; i < size_; ++i)
     magnitudes_[i] -= o.magnitudes_[i];
   return *this;
 }
 
 EuclideanVector& EuclideanVector::operator*=(const double val) noexcept {
-  std::cout << "Calling operator*=" << std::endl;
   for (int i = 0; i < size_; ++i)
     magnitudes_[i] *= val;
   return *this;
@@ -167,8 +176,12 @@ bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept
 }
 
 EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs) {
-  if (lhs.size_ != rhs.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
+  if (lhs.size_ != rhs.size_) {
+    std::ostringstream oss;
+    oss << "Dimensions of LHS(" << lhs.size_ << ") and RHS(" << rhs.size_
+        << ") do not match";
+    throw EuclideanVectorError(oss.str());
+  }
   EuclideanVector res{lhs.size_};
   for (int i = 0; i < lhs.size_; ++i) {
     res.magnitudes_[i] = lhs.magnitudes_[i] + rhs.magnitudes_[i];
@@ -177,8 +190,12 @@ EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs
 }
 
 EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs) {
-  if (lhs.size_ != rhs.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
+  if (lhs.size_ != rhs.size_) {
+    std::ostringstream oss;
+    oss << "Dimensions of LHS(" << lhs.size_ << ") and RHS(" << rhs.size_
+        << ") do not match";
+    throw EuclideanVectorError(oss.str());
+  }
   EuclideanVector res{lhs.size_};
   for (int i = 0; i < lhs.size_; ++i) {
     res.magnitudes_[i] = lhs.magnitudes_[i] - rhs.magnitudes_[i];
@@ -187,8 +204,12 @@ EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs
 }
 
 double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs) {
-  if (lhs.size_ != rhs.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
+  if (lhs.size_ != rhs.size_) {
+    std::ostringstream oss;
+    oss << "Dimensions of LHS(" << lhs.size_ << ") and RHS(" << rhs.size_
+        << ") do not match";
+    throw EuclideanVectorError(oss.str());
+  }
   double res = 0;
   for (int i = 0; i < lhs.size_; ++i) {
     res += lhs.magnitudes_[i] * rhs.magnitudes_[i];
@@ -196,18 +217,7 @@ double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs) {
   return res;
 }
 
-EuclideanVector operator/(const EuclideanVector& lhs, const EuclideanVector& rhs) {
-  if (lhs.size_ != rhs.size_)
-    throw EuclideanVectorError("Dimensions of LHS(X) and RHS(Y) do not match");
-  EuclideanVector res{lhs.size_};
-  for (int i = 0; i < lhs.size_; ++i) {
-    res.magnitudes_[i] = lhs.magnitudes_[i] / rhs.magnitudes_[i];
-  }
-  return res;
-}
-
 EuclideanVector operator*(const EuclideanVector& lhs, double rhs) noexcept {
-  std::cout << "Calling * operator " << std::endl;
   EuclideanVector res{lhs.size_};
   for (int i = 0; i < lhs.size_; ++i) {
     res.magnitudes_[i] = lhs.magnitudes_[i] * rhs;
@@ -216,7 +226,6 @@ EuclideanVector operator*(const EuclideanVector& lhs, double rhs) noexcept {
 }
 
 EuclideanVector operator*(double lhs, const EuclideanVector& rhs) noexcept {
-  std::cout << "Calling * operator " << std::endl;
   EuclideanVector res{rhs.size_};
   for (int i = 0; i < rhs.size_; ++i) {
     res.magnitudes_[i] = rhs.magnitudes_[i] * lhs;
