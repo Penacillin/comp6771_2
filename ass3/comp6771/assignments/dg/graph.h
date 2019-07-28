@@ -67,8 +67,7 @@ class Graph {
   }
 
  private:
-  std::vector<std::unique_ptr<N>> nodes;
-  std::vector<std::unique_ptr<E>> edges;
+  std::vector<std::shared_ptr<N>> nodes;
 
   std::vector<
     std::pair<

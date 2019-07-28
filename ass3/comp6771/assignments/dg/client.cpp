@@ -6,7 +6,6 @@
 // Note: At the moment, there is no client.sampleout. Please do your own testing
 
 int main() {
-
   // gdwg::Graph<std::string, int> g;
   // {
   //   std::string s1{"Hello"};
@@ -28,7 +27,16 @@ int main() {
 
   // return 0;
 
-  
+  gdwg::Graph<std::string, int> g{"A", "B", "C", "D"};
+  std::cout << g.InsertEdge("A", "B", 1) << std::endl;
+  std::cout << g.InsertEdge("A", "C", 2) << std::endl;
+  std::cout << g.InsertEdge("A", "D", 3) << std::endl;
+  std::cout << g.InsertEdge("B", "B", 1) << std::endl;
+  std::cout << g << '\n';
+  g.MergeReplace("A", "B");
+  std::cout << g << '\n';
+
+  return 0;
 
   // g.InsertNode("hello");
   // g.InsertNode("how");

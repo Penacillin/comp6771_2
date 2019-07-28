@@ -78,13 +78,34 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
   std::pair<
       std::shared_ptr<N>,
       std::vector<std::pair<std::shared_ptr<N>, E>>
-  >* old_data_pair, new_data_pair;
+  > *old_data_pair, *new_data_pair = nullptr;
+  size_t old_data_pair_index, new_data_pair_index = -1;
 
-  for (const auto& node_pairs : this->adj_list_) {
-    if (*node_pairs.first == oldData) {
-      old_data_pair = &node_pairs;
+  for (size_t i = 0; i < this->adj_list_.size() ; ++i) {
+    if (*this->adj_list_[i].first == oldData) {
+      old_data_pair_index = i;
+      old_data_pair = &this->adj_list_[i];
+      break;
     }
   }
+  for (size_t i = 0; i < this->adj_list_.size() ; ++i) {
+    if (*this->adj_list_[i].first == newData) {
+      new_data_pair_index = i;
+      new_data_pair = &this->adj_list_[i];
+      break;
+    }
+  }
+
+  if (old_data_pair == nullptr || new_data_pair == nullptr) {
+    throw std::runtime_error("Cannot call Graph::MergeReplace on old or new data"
+      "if they don't exist in the graph");
+  }
+
+  new_data_pair->second.insert(new_data_pair->second.begin(),
+    old_data_pair->second.begin(), old_data_pair->second.end());
+
+  this->adj_list_.erase(this->adj_list_.begin() + old_data_pair_index);
+  (void)new_data_pair_index;
 }
 
 template <typename N, typename E>
