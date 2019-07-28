@@ -2,6 +2,7 @@
 #define ASSIGNMENTS_DG_GRAPH_H_
 
 #include <memory>
+#include <set>
 #include <tuple>
 #include <vector>
 
@@ -25,6 +26,7 @@ class Graph {
  private:
     std::vector<std::unique_ptr<N>> nodes;
     std::vector<std::unique_ptr<E>> edges;
+    std::set<std::unique_ptr
 };
 
 }  // namespace gdwg

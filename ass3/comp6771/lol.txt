@@ -3,30 +3,10 @@ Loading: 0 packages loaded
 Analyzing: target //assignments/dg:client (0 packages loaded, 0 targets configured)
 INFO: Analyzed target //assignments/dg:client (0 packages loaded, 0 targets configured).
 INFO: Found 1 target...
-[1 / 4] [Prepa] BazelWorkspaceStatusAction stable-status.txt ... (2 actions, 0 running)
+[1 / 4] [Prepa] BazelWorkspaceStatusAction stable-status.txt
 ERROR: /mnt/c/Users/nevin/source/repos/comp6771_2/ass3/comp6771/assignments/dg/BUILD:7:1: C++ compilation of rule '//assignments/dg:client' failed (Exit 1) gcc failed: error executing command /usr/bin/gcc -U_FORTIFY_SOURCE -fstack-protector -Wall -Wunused-but-set-parameter -Wno-free-nonheap-object -fno-omit-frame-pointer '-std=c++0x' -MD -MF ... (remaining 26 argument(s) skipped)
 
 Use --sandbox_debug to see verbose messages from the sandbox
-In file included from ./assignments/dg/graph.h:32:0,
-                 from assignments/dg/client.cpp:4:
-./assignments/dg/graph.tpp:10:18: error: invalid declarator before '(' token
- gdwg::Graph<N, E>(const typename std::vector<N>::const_iterator start,
-                  ^
-./assignments/dg/graph.tpp:16:67: error: expected ')' before ',' token
- gdwg::Graph<N, E>(std::vector<std::tuple<N, N, E>>::const_iterator,
-                                                                   ^
-./assignments/dg/graph.tpp:22:18: error: invalid declarator before '(' token
- gdwg::Graph<N, E>(std::initializer_list<N>) {
-                  ^
-./assignments/dg/graph.tpp:27:18: error: invalid declarator before '(' token
- gdwg::Graph<N, E>(const gdwg::Graph<N, E>&) {
-                  ^
-./assignments/dg/graph.tpp:32:18: error: invalid declarator before '(' token
- gdwg::Graph<N, E>(gdwg::Graph<N, E>&&) {
-                  ^
-./assignments/dg/graph.tpp:37:7: error: scope 'gdwg' before '~' is not a class-name
- gdwg::~Graph<N, E>() {
-       ^
 assignments/dg/client.cpp: In function 'int main()':
 assignments/dg/client.cpp:10:5: error: 'class gdwg::Graph<std::__cxx11::basic_string<char>, int>' has no member named 'InsertNode'
    g.InsertNode("hello");
@@ -696,9 +676,17 @@ In file included from /usr/include/c++/7/bits/range_access.h:36:0,
 assignments/dg/client.cpp:33:41: note:   'gdwg::Graph<std::__cxx11::basic_string<char>, int>' is not derived from 'std::initializer_list<_Tp>'
    for (const auto& [from, to, weight] : g) {
                                          ^
+In file included from ./assignments/dg/graph.h:32:0,
+                 from assignments/dg/client.cpp:4:
+./assignments/dg/graph.tpp: In instantiation of 'gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>&) [with N = std::__cxx11::basic_string<char>; E = int]':
+assignments/dg/client.cpp:26:37:   required from here
+./assignments/dg/graph.tpp:28:51: error: unused parameter 'rhs' [-Werror=unused-parameter]
+ gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& rhs) {
+                                                   ^~~
+cc1plus: all warnings being treated as errors
 Target //assignments/dg:client failed to build
 Use --verbose_failures to see the command lines of failed build steps.
-INFO: Elapsed time: 1.410s, Critical Path: 1.11s
+INFO: Elapsed time: 1.433s, Critical Path: 1.07s
 INFO: 0 processes.
 FAILED: Build did NOT complete successfully
 FAILED: Build did NOT complete successfully
