@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+#include <iostream>
+
 namespace gdwg {
 
 template <typename N, typename E>
@@ -38,6 +40,7 @@ class Graph {
   void Clear();
   bool IsNode(const N& val);
   bool IsConnected(const N& src, const N& dst);
+
   std::vector<N> GetNodes();
   std::vector<N> GetConnected(const N& src);
   std::vector<E> GetWeights(const N& src, const N& dst);
@@ -68,26 +71,22 @@ class Graph {
   }
 
  private:
-  std::vector<std::shared_ptr<N>> nodes;
-
   struct adj_list_cmp {
-    bool operator()(std::shared_ptr<N> lhs, std::shared_ptr<N> rhs) const {
-        return *lhs < *rhs;
+    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
+      std::cout << "Comparing " << *lhs << " to " << *rhs << " = " << (*lhs < *rhs) << std::endl;
+      return *lhs < *rhs;
     }
   };
 
   struct graph_edges_cmp {
-    bool operator()(std::shared_ptr<N> lhs, std::shared_ptr<N> rhs) const {
-        return *lhs < *rhs;
+    bool operator()(const std::pair<std::shared_ptr<N>, E>& lhs,
+                    const std::pair<std::shared_ptr<N>, E>& rhs) const {
+        return *lhs.first < *rhs.first;
     }
   };
 
-  typedef std::set<std::pair<std::shared_ptr<N>, E>> graph_edges;
-  typedef std::map<
-    std::shared_ptr<N>,
-    graph_edges,
-    adj_list_cmp
-  > graph_type;
+  typedef std::set<std::pair<std::shared_ptr<N>, E>, graph_edges_cmp> graph_edges;
+  typedef std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp> graph_type;
   graph_type adj_list_;
 };
 

@@ -120,15 +120,29 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
   auto newData_ptr = std::shared_ptr<N>(const_cast<N*>(&newData), [](N*){});
   auto oldData_node = this->adj_list_.find(oldData_ptr);
   auto newData_node = this->adj_list_.find(newData_ptr);
-
+  
   if (oldData_node == this->adj_list_.end()) {
     throw std::runtime_error("Cannot call Graph::Replace on a node that doesn't exist");
   }
   if (newData_node != this->adj_list_.end()) {
     return false;
   }
+
+  auto newData_alloced_ptr = std::make_shared<N>(newData);
+  auto extracted_oldData_node = this->adj_list_.extract(oldData_ptr);
+  extracted_oldData_node.key() = newData_alloced_ptr;
+  this->adj_list_.insert(std::move(extracted_oldData_node));
   
-  *oldData_node->first = newData;
+  for (auto it = this->adj_list_.begin(); it != this->adj_list_.end(); ++it) {
+    for (auto edge = it->second.begin(); edge != it->second.end(); ++edge) {
+      if (*edge->first == oldData) {
+        auto extracted_oldData_edge_node = it->second.extract(edge);
+        extracted_oldData_edge_node.value().first = newData_alloced_ptr;
+        it->second.insert(std::move(extracted_oldData_edge_node));
+      }
+    }
+  }
+
   return true;
 }
 
@@ -181,3 +195,16 @@ bool gdwg::Graph<N, E>::IsNode(const N& val) {
   return this->adj_list_.find(val_ptr) != this->adj_list_.end();
 }
 
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) {
+  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  auto src_node = this->adj_list_.find(src_ptr);
+  auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
+  auto dst_node = this->adj_list_.find(dst_ptr);
+
+  if (src_node == this->adj_list_.end()
+      || dst_node == this->adj_list_.end()) {
+    throw std::runtime_error("Cannot call Graph::InsertEdge when"
+      " either src or dst node does not exist");
+  }
+}

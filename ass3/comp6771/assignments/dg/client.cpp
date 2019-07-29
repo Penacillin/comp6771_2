@@ -53,7 +53,9 @@ int main() {
 
   std::cout << g << '\n';
 
+  std::cout << "REPLACING A -> NA" << std::endl;
   g.Replace("A", "NA");
+  std::cout << "REPLACEd -> NA" << std::endl;
 
   std::cout << g << std::endl;
 
