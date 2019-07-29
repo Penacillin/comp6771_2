@@ -1,111 +1,110 @@
 #include "graph.h"
 // #include <vector>
 
+
+
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph() {
-    
+  //   this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph(const typename std::vector<N>::const_iterator start,
                         const typename std::vector<N>::const_iterator end) {
-
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph(const typename std::vector<std::tuple<N, N, E>>::const_iterator start,
                         const typename std::vector<std::tuple<N, N, E>>::const_iterator end) {
-    
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph(std::initializer_list<N> init_list) {
-    for (const auto& it : init_list) {
-        auto node_ptr = std::make_shared<N>(it);
-        this->adj_list_.push_back(std::make_pair(node_ptr, std::vector<std::pair<std::shared_ptr<N>, E>>()));
-    }
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
+
+  for (const auto& it : init_list) {
+      auto node_ptr = std::make_shared<N>(it);
+      this->adj_list_.insert(std::make_pair(node_ptr, graph_edges()));
+  }
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& rhs) {
-
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph(gdwg::Graph<N, E>&& rhs) {
-
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::~Graph() {
-    
+  // this->adj_list_ = std::map<
+  //   std::shared_ptr<N>,
+  //   graph_edge
+  // >(this->graph_key_cmp);
 }
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::InsertNode(const N& val) noexcept {
-    for (const auto& it : this->adj_list_) {
-        if (*it.first == val) {
-            return false;
-        }
-    }
-    auto node_ptr = std::make_shared<N>(val);
-    this->adj_list_.push_back(std::make_pair(node_ptr, std::vector<std::pair<std::shared_ptr<N>, E>>()));
-    return true;
+  auto node_ptr = std::make_shared<N>(val);
+  auto ret = this->adj_list_.insert(typename graph_type::value_type(node_ptr, graph_edges()));
+
+  return ret.second;
 }
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
-  for (auto& node : this->adj_list_) {
-    if (*node.first != src) continue;
-    for (const auto& edge : node.second) {
-      if (*edge.first == dst && edge.second == w) return false;
-    }
-    for (const auto& dst_find: this->adj_list_) {
-      if (*dst_find.first == dst) {
-        std::shared_ptr<N> dst_ptr = dst_find.first;
-        node.second.push_back(std::make_pair(dst_ptr, w));
-        return true;
-      }
-    }
+  // std::make_shared<N>(src)
+  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
+  auto src_node = this->adj_list_.find(src_ptr);
+  auto dst_node = this->adj_list_.find(dst_ptr);
+  
+  if (src_node == this->adj_list_.end()
+      || dst_node == this->adj_list_.end()) {
+    throw std::runtime_error("Cannot call Graph::InsertEdge when"
+      " either src or dst node does not exist");
   }
 
-  throw std::runtime_error("Cannot call Graph::InsertEdge when"
-    " either src or dst node does not exist");
+  const auto ret = src_node->second.insert(typename graph_edges::value_type(dst_node->first, w));
+  return ret.second;
 }
 
 template <typename N, typename E>
 void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
-  std::pair<
-      std::shared_ptr<N>,
-      std::vector<std::pair<std::shared_ptr<N>, E>>
-  > *old_data_pair, *new_data_pair = nullptr;
-  size_t old_data_pair_index, new_data_pair_index = -1;
+  auto oldData_ptr = std::shared_ptr<N>(const_cast<N*>(&oldData), [](N*){});
+  auto newData_ptr = std::shared_ptr<N>(const_cast<N*>(&newData), [](N*){});
+  auto oldData_node = this->adj_list_.find(oldData_ptr);
+  auto newData_node = this->adj_list_.find(newData_ptr);
 
-  for (size_t i = 0; i < this->adj_list_.size() ; ++i) {
-    if (*this->adj_list_[i].first == oldData) {
-      old_data_pair_index = i;
-      old_data_pair = &this->adj_list_[i];
-      break;
-    }
-  }
-  for (size_t i = 0; i < this->adj_list_.size() ; ++i) {
-    if (*this->adj_list_[i].first == newData) {
-      new_data_pair_index = i;
-      new_data_pair = &this->adj_list_[i];
-      break;
-    }
-  }
-
-  if (old_data_pair == nullptr || new_data_pair == nullptr) {
+  if (oldData_node == this->adj_list_.end() || newData_node == this->adj_list_.end()) {
     throw std::runtime_error("Cannot call Graph::MergeReplace on old or new data"
       "if they don't exist in the graph");
   }
 
-  new_data_pair->second.insert(new_data_pair->second.begin(),
-    old_data_pair->second.begin(), old_data_pair->second.end());
-
-  this->adj_list_.erase(this->adj_list_.begin() + old_data_pair_index);
-  (void)new_data_pair_index;
+  newData_node->second.insert(oldData_node->second.begin(), oldData_node->second.end());
 }
 
 template <typename N, typename E>

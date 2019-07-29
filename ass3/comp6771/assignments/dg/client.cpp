@@ -17,21 +17,18 @@ int main() {
   // //  will still be in here.
   // std::cout << g.IsNode("Hello") << "\n";  // prints 'true';
 
-  // return 0;
-
   // gdwg::Graph<std::string, int> g{"hello", "how"};
   // std::cout << g.InsertEdge("hello", "how", 5) << std::endl;
   // std::cout << g.InsertEdge("hello", "how", 5) << std::endl;
   // std::cout << g.InsertEdge("how", "hello", 5) << std::endl;
   // std::cout << g << '\n';
 
-  // return 0;
-
   gdwg::Graph<std::string, int> g{"A", "B", "C", "D"};
   std::cout << g.InsertEdge("A", "B", 1) << std::endl;
   std::cout << g.InsertEdge("A", "C", 2) << std::endl;
   std::cout << g.InsertEdge("A", "D", 3) << std::endl;
   std::cout << g.InsertEdge("B", "B", 1) << std::endl;
+  std::cout << g.InsertEdge("B", "B", 2) << std::endl;
   std::cout << g << '\n';
   g.MergeReplace("A", "B");
   std::cout << g << '\n';

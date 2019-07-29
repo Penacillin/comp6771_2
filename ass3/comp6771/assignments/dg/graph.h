@@ -6,6 +6,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <map>
 
 namespace gdwg {
 
@@ -69,12 +70,25 @@ class Graph {
  private:
   std::vector<std::shared_ptr<N>> nodes;
 
-  std::vector<
-    std::pair<
-      std::shared_ptr<N>,
-      std::vector<std::pair<std::shared_ptr<N>, E>>
-    >
-  > adj_list_;
+  struct adj_list_cmp {
+    bool operator()(std::shared_ptr<N> lhs, std::shared_ptr<N> rhs) const {
+        return *lhs < *rhs;
+    }
+  };
+
+  struct graph_edges_cmp {
+    bool operator()(std::shared_ptr<N> lhs, std::shared_ptr<N> rhs) const {
+        return *lhs < *rhs;
+    }
+  };
+
+  typedef std::set<std::pair<std::shared_ptr<N>, E>> graph_edges;
+  typedef std::map<
+    std::shared_ptr<N>,
+    graph_edges,
+    adj_list_cmp
+  > graph_type;
+  graph_type adj_list_;
 };
 
 }  // namespace gdwg
