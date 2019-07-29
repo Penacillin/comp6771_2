@@ -44,7 +44,9 @@ gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& rhs) {
   }
   for (const auto& it : rhs.adj_list_) {
     for (const auto& edge : it.second) {
-      this->InsertEdge(*it.first, *edge.first, edge.second);
+      for (const auto& weight : edge.second) {
+        this->InsertEdge(*it.first, *edge.first, weight);
+      }
       // auto graph_dst_node = this->adj_list_.find(edges)
       // if (this->adj_list_.)
       // ret.second.insert(typename graph_edges::value_type(, 1));
@@ -110,8 +112,16 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
       " either src or dst node does not exist");
   }
 
-  const auto ret = src_node->second.insert(typename graph_edges::value_type(dst_node->first, w));
-  return ret.second;
+  auto src_dst_node = src_node->second.find(dst_ptr);
+  if (src_dst_node == src_node->second.end()) {
+    src_node->second.insert(typename graph_edges::value_type(dst_node->first, std::set<E>({w})));
+
+    return true;
+  } else {
+    auto ret = src_dst_node->second.insert(w);
+    return ret.second;
+  }
+  // const auto ret = src_node->second.insert(typename graph_edges::value_type(dst_node->first, w));
 }
 
 template <typename N, typename E>
@@ -134,12 +144,11 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
   this->adj_list_.insert(std::move(extracted_oldData_node));
   
   for (auto it = this->adj_list_.begin(); it != this->adj_list_.end(); ++it) {
-    for (auto edge = it->second.begin(); edge != it->second.end(); ++edge) {
-      if (*edge->first == oldData) {
-        auto extracted_oldData_edge_node = it->second.extract(edge);
-        extracted_oldData_edge_node.value().first = newData_alloced_ptr;
-        it->second.insert(std::move(extracted_oldData_edge_node));
-      }
+    auto edge_node = it->second.find(oldData_ptr);
+    if (edge_node != it->second.end()) {
+      auto extracted_oldData_edge_node = it->second.extract(edge_node);
+      extracted_oldData_edge_node.key() = newData_alloced_ptr;
+      it->second.insert(std::move(extracted_oldData_edge_node));
     }
   }
 
@@ -207,4 +216,52 @@ bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) {
     throw std::runtime_error("Cannot call Graph::InsertEdge when"
       " either src or dst node does not exist");
   }
+
+  return src_node->second.find(dst_ptr) != src_node->second.end();
+}
+
+template <typename N, typename E>
+std::vector<N> gdwg::Graph<N, E>::GetNodes() {
+  std::vector<N> res(this->adj_list_.size());
+
+  for (const auto& node : this->adj_list_) {
+    res.push_back(*node.first);
+  }
+
+  return res;
+}
+
+template <typename N, typename E>
+std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) {
+  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  auto src_node = this->adj_list_.find(src_ptr);
+  if (src_node == this->adj_list_.end()) {
+    throw std::out_of_range("Cannot call Graph::GetConnected if src doesn't exist in the graph");
+  }
+  std::vector<N> res(src_node->second.size());
+
+  for (const auto& node : src_node->second) {
+    res.push_back(*node.first);
+  }
+
+  return res;
+}
+
+template <typename N, typename E>
+std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
+  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  auto src_node = this->adj_list_.find(src_ptr);
+  auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
+  auto dst_node = this->adj_list_.find(dst_ptr);
+  if (src_node == this->adj_list_.end() || dst_node == this->adj_list_.end()) {
+    throw std::out_of_range("Cannot call Graph::GetWeights if "
+      " src or dst node don't exist in the graph");
+  }
+  std::vector<N> res(src_node->second.size());
+
+  for (const auto& node : src_node->second) {
+    res.push_back(*node.first);
+  }
+
+  return res;
 }

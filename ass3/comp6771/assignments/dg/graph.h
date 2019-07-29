@@ -63,7 +63,9 @@ class Graph {
     for (const auto& it : g.adj_list_) {
       os << *(it.first) << " (" << std::endl;
       for (const auto& edge : it.second) {
-        os << "  " << *edge.first << " | " << edge.second << std::endl;;
+        for (const auto& weight : edge.second) {
+          os << "  " << *edge.first << " | " << weight << std::endl;;
+        }
       }
       os << ")" << std::endl;
     }
@@ -73,19 +75,17 @@ class Graph {
  private:
   struct adj_list_cmp {
     bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
-      std::cout << "Comparing " << *lhs << " to " << *rhs << " = " << (*lhs < *rhs) << std::endl;
       return *lhs < *rhs;
     }
   };
 
   struct graph_edges_cmp {
-    bool operator()(const std::pair<std::shared_ptr<N>, E>& lhs,
-                    const std::pair<std::shared_ptr<N>, E>& rhs) const {
-        return *lhs.first < *rhs.first;
+    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
+        return *lhs < *rhs;
     }
   };
 
-  typedef std::set<std::pair<std::shared_ptr<N>, E>, graph_edges_cmp> graph_edges;
+  typedef std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp> graph_edges;
   typedef std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp> graph_type;
   graph_type adj_list_;
 };

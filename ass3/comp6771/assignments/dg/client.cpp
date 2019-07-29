@@ -34,7 +34,7 @@ int main() {
   // std::cout << g << '\n';
 
 
-  std::string s1{"Hello"};
+  std::string s1{"ni hao"};
   std::string s2{"how"};
   std::string s3{"are"};
   auto e1 = std::make_tuple(s1, s2, 5.4);
@@ -42,7 +42,10 @@ int main() {
   auto e = std::vector<std::tuple<std::string, std::string, double>>{e1, e2};
   gdwg::Graph<std::string, double> b{e.begin(), e.end()};
 
+  std::cout << "Created first graph" << std::endl;
+
   std::cout << b << std::endl;
+
 
   gdwg::Graph<std::string, int> g{"A", "B", "C"};
   g.InsertEdge("A", "B", 5);
@@ -52,12 +55,19 @@ int main() {
   g.InsertEdge("C", "A", 2);
 
   std::cout << g << '\n';
+  const auto res = g.GetConnected("B");
+  for (const auto& it : res)
+    std::cout << it << " ";
+  std::cout << std::endl;
 
   std::cout << "REPLACING A -> NA" << std::endl;
   g.Replace("A", "NA");
   std::cout << "REPLACEd -> NA" << std::endl;
 
   std::cout << g << std::endl;
+
+
+  std::cout << "Is NA -> B ? : " << g.IsConnected("NA", "B") << std::endl;
 
   gdwg::Graph<std::string, int> g2;
   g2 = std::move(g);
