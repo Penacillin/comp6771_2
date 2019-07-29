@@ -23,17 +23,50 @@ int main() {
   // std::cout << g.InsertEdge("how", "hello", 5) << std::endl;
   // std::cout << g << '\n';
 
-  gdwg::Graph<std::string, int> g{"A", "B", "C", "D"};
-  std::cout << g.InsertEdge("A", "B", 1) << std::endl;
-  std::cout << g.InsertEdge("A", "C", 2) << std::endl;
-  std::cout << g.InsertEdge("A", "D", 3) << std::endl;
-  std::cout << g.InsertEdge("B", "B", 1) << std::endl;
-  std::cout << g.InsertEdge("B", "B", 2) << std::endl;
-  std::cout << g << '\n';
-  g.MergeReplace("A", "B");
+  // gdwg::Graph<std::string, int> g{"A", "B", "C", "D"};
+  // std::cout << g.InsertEdge("A", "B", 1) << std::endl;
+  // std::cout << g.InsertEdge("A", "C", 2) << std::endl;
+  // std::cout << g.InsertEdge("A", "D", 3) << std::endl;
+  // std::cout << g.InsertEdge("B", "B", 1) << std::endl;
+  // std::cout << g.InsertEdge("B", "B", 2) << std::endl;
+  // std::cout << g << '\n';
+  // g.MergeReplace("A", "B");
+  // std::cout << g << '\n';
+
+
+  std::string s1{"Hello"};
+  std::string s2{"how"};
+  std::string s3{"are"};
+  auto e1 = std::make_tuple(s1, s2, 5.4);
+  auto e2 = std::make_tuple(s2, s3, 7.6);
+  auto e = std::vector<std::tuple<std::string, std::string, double>>{e1, e2};
+  gdwg::Graph<std::string, double> b{e.begin(), e.end()};
+
+  std::cout << b << std::endl;
+
+  gdwg::Graph<std::string, int> g{"A", "B", "C"};
+  g.InsertEdge("A", "B", 5);
+  g.InsertEdge("C", "B", 2);
+  g.InsertEdge("B", "B", 2);
+  g.InsertEdge("B", "A", 2);
+  g.InsertEdge("C", "A", 2);
+
   std::cout << g << '\n';
 
-  return 0;
+  g.Replace("A", "NA");
+
+  std::cout << g << std::endl;
+
+  gdwg::Graph<std::string, int> g2;
+  g2 = std::move(g);
+  // g2.Replace("B", "NB");
+
+
+  std::cout << "-" << std::endl;
+  std::cout << g << std::endl;
+  std::cout << "-" << std::endl;
+  g2.DeleteNode("B");
+  std::cout << g2 << "\n";
 
   // g.InsertNode("hello");
   // g.InsertNode("how");
@@ -60,34 +93,39 @@ int main() {
   // for (const auto& [from, to, weight] : g) {
   //   std::cout << from << " -> " << to << " (weight " << weight << ")\n";
   // }
+
+  return 0;
 }
 
-// int main() {
-//   gdwg::Graph<std::string, int> g;
-//   g.InsertNode("hello");
-//   g.InsertNode("how");
-//   g.InsertNode("are");
-//   g.InsertNode("you?");
+int main2() {
+  gdwg::Graph<std::string, int> g;
+  g.InsertNode("hello");
+  g.InsertNode("how");
+  g.InsertNode("are");
+  g.InsertNode("you?");
 
-//   g.InsertEdge("hello", "how", 5);
-//   g.InsertEdge("hello", "are", 8);
-//   g.InsertEdge("hello", "are", 2);
+  g.InsertEdge("hello", "how", 5);
+  g.InsertEdge("hello", "are", 8);
+  g.InsertEdge("hello", "are", 2);
 
-//   g.InsertEdge("how", "you?", 1);
-//   g.InsertEdge("how", "hello", 4);
+  g.InsertEdge("how", "you?", 1);
+  g.InsertEdge("how", "hello", 4);
 
-//   g.InsertEdge("are", "you?", 3);
+  g.InsertEdge("are", "you?", 3);
 
-//   std::cout << g << '\n';
+  std::cout << g << '\n';
 
-//   gdwg::Graph<std::string, int> g2{g};
+  gdwg::Graph<std::string, int> g2{g};
 
-//   std::cout << g2 << "\n";
+  std::cout << g2 << "\n";
 
-//   // This is a structured binding.
-//   // https://en.cppreference.com/w/cpp/language/structured_binding
-//   // It allows you to unpack your tuple.
-//   for (const auto& [from, to, weight] : g) {
-//     std::cout << from << " -> " << to << " (weight " << weight << ")\n";
-//   }
-// }
+
+  // This is a structured binding.
+  // https://en.cppreference.com/w/cpp/language/structured_binding
+  // It allows you to unpack your tuple.
+  // for (const auto& [from, to, weight] : g) {
+  //   std::cout << from << " -> " << to << " (weight " << weight << ")\n";
+  // }
+
+  return 0;
+}

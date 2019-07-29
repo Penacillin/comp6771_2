@@ -32,7 +32,7 @@ class Graph {
 
   bool InsertNode(const N& val) noexcept;
   bool InsertEdge(const N& src, const N& dst, const E& w);
-  bool DeleteNode(const N&);
+  bool DeleteNode(const N&) noexcept;
   bool Replace(const N& oldData, const N& newData);
   void MergeReplace(const N& oldData, const N& newData);
   void Clear();
