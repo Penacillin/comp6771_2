@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <vector>
+
 #include "assignments/dg/graph.h"
 
 // Note: At the moment, there is no client.sampleout. Please do your own testing
@@ -33,6 +35,8 @@ int main() {
   // g.MergeReplace("A", "B");
   // std::cout << g << '\n';
 
+  std::vector<int> ok;
+  std::cout << (ok.begin() == ok.end()) << std::endl;
 
   std::string s1{"ni hao"};
   std::string s2{"how"};
@@ -55,7 +59,7 @@ int main() {
   g.InsertEdge("C", "A", 2);
 
   std::cout << g << '\n';
-  const auto res = g.GetConnected("B");
+  const auto res = g.GetWeights("B", "A");
   for (const auto& it : res)
     std::cout << it << " ";
   std::cout << std::endl;
@@ -79,6 +83,12 @@ int main() {
   std::cout << "-" << std::endl;
   g2.DeleteNode("B");
   std::cout << g2 << "\n";
+
+  for (auto it = g2.begin(); it != g2.end(); ++it)
+    std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+
+  std::cout << "lmao" << std::endl;
+
 
   // g.InsertNode("hello");
   // g.InsertNode("how");

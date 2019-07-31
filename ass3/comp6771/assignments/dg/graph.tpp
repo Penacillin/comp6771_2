@@ -1,7 +1,6 @@
 #include "graph.h"
-// #include <vector>
 
-
+#include <iostream>
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph() {
@@ -238,7 +237,7 @@ std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) {
   if (src_node == this->adj_list_.end()) {
     throw std::out_of_range("Cannot call Graph::GetConnected if src doesn't exist in the graph");
   }
-  std::vector<N> res(src_node->second.size());
+  std::vector<N> res();
 
   for (const auto& node : src_node->second) {
     res.push_back(*node.first);
@@ -257,11 +256,58 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
     throw std::out_of_range("Cannot call Graph::GetWeights if "
       " src or dst node don't exist in the graph");
   }
-  std::vector<N> res(src_node->second.size());
 
-  for (const auto& node : src_node->second) {
-    res.push_back(*node.first);
+  auto src_dst_node = src_node->second.find(dst_ptr);
+  // std::vector<E> res(src_dst_node->second.size());
+  std::vector<E> res;
+  for (const auto& node : src_dst_node->second) {
+    res.push_back(node);
   }
 
   return res;
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
+  return const_iterator(this->adj_list_.begin(),
+      this->adj_list_.begin()->second.begin(),
+      this->adj_list_.begin()->second.begin()->second.begin(),
+      this->adj_list_.end());
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::end() {
+  auto last_node = this->adj_list_.end();
+  if (last_node != this->adj_list_.begin()) --last_node;
+  auto last_edge = last_node->second.end();
+  for (auto last_node_backward = last_node; last_node_backward->second.size() ==0;
+    last_edge = (--last_node_backward)->second.end());
+  --last_edge;
+  return const_iterator(this->adj_list_.end(),
+      last_node->second.end(),
+      last_edge->second.end(),
+      this->adj_list_.end());
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator++() {
+  ++this->weight_iterator;
+  if (this->weight_iterator == this->edge_iterator->second.end()) {
+    ++this->edge_iterator;
+    while (this->edge_iterator == this->node_iterator->second.end()) {
+      ++this->node_iterator;
+      if (this->node_iterator == this->node_iterator_end) {
+        return *this;
+      }
+      this->edge_iterator = this->node_iterator->second.begin();
+    }
+    this->weight_iterator = this->edge_iterator->second.begin();
+  }
+  return *this;
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator::reference
+  gdwg::Graph<N, E>::const_iterator::operator*() const {
+   return { *this->node_iterator->first, *this->edge_iterator->first, *this->weight_iterator }; 
 }

@@ -14,8 +14,84 @@ namespace gdwg {
 
 template <typename N, typename E>
 class Graph {
+ private:
+  struct adj_list_cmp {
+    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
+      return *lhs < *rhs;
+    }
+  };
+
+  struct graph_edges_cmp {
+    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
+        return *lhs < *rhs;
+    }
+  };
+
+  typedef std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp> graph_edges;
+  typedef std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp> graph_type;
+
  public:
-  class const_iterator {};
+  class const_iterator {
+   public:
+      const_iterator(typename graph_type::iterator gt_begin,
+                     typename graph_edges::iterator ge_begin,
+                     typename std::set<E>::iterator weights_begin,
+                     typename graph_type::iterator gt_end) {
+        this->node_iterator = gt_begin;
+        this->edge_iterator = ge_begin;
+        this->weight_iterator = weights_begin;
+        this->node_iterator_end = gt_end;
+      }
+
+      using iterator_category = std::bidirectional_iterator_tag;
+      using value_type = std::tuple<N, N, E>;
+      using reference = std::tuple<const N&, const N&, const E&>;
+      using pointer = value_type*;
+      using difference_type = int;
+
+      reference operator*() const;
+
+      const_iterator& operator++();
+      const_iterator operator++(int) {
+        auto copy{*this};
+        ++(*this);
+        return copy;
+      }
+      const_iterator& operator--();
+      const_iterator operator--(int);
+
+      bool operator==(const const_iterator& rhs) {
+        std::cout << (this->node_iterator == rhs.node_iterator)
+                  << (this->edge_iterator == rhs.edge_iterator)
+                  << (this->weight_iterator == rhs.weight_iterator)
+                  << (this->node_iterator == this->node_iterator_end)<< std::endl;
+        return this->node_iterator == rhs.node_iterator
+              && this->edge_iterator == rhs.edge_iterator
+              && this->weight_iterator == rhs.weight_iterator;
+      }
+
+      // bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+      //   std::cout << std::get<0>(*lhs) << std::get<1>(*lhs) << std::get<2>(*lhs)
+      //         << "vs " << std::get<0>(*rhs) << std::get<1>(*rhs) << std::get<2>(*rhs) << std::endl;
+      //   return lhs.node_iterator == rhs.node_iterator
+      //         && lhs.edge_iterator == rhs.edge_iterator
+      //         && lhs.weight_iterator == rhs.weight_iterator;
+      // }
+
+      bool operator!=(const const_iterator& rhs) {
+        return !(*this == rhs);
+      }
+      // bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+      //   return !(lhs == rhs);
+      // }
+
+   private:
+    typename graph_type::iterator node_iterator;
+    typename graph_edges::iterator edge_iterator;
+    typename std::set<E>::iterator weight_iterator;
+
+    typename graph_type::iterator node_iterator_end;
+  };
   class const_reverse_iterator {};
 
   Graph<N, E>();
@@ -46,6 +122,7 @@ class Graph {
   std::vector<E> GetWeights(const N& src, const N& dst);
   const_iterator find(const N&, const N&, const E&);
   bool erase(const N& src, const N& dst, const E& w);
+
   const_iterator erase(const_iterator it);
   const_iterator cbegin();
   const_iterator cend();
@@ -73,20 +150,6 @@ class Graph {
   }
 
  private:
-  struct adj_list_cmp {
-    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
-      return *lhs < *rhs;
-    }
-  };
-
-  struct graph_edges_cmp {
-    bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
-        return *lhs < *rhs;
-    }
-  };
-
-  typedef std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp> graph_edges;
-  typedef std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp> graph_type;
   graph_type adj_list_;
 };
 
