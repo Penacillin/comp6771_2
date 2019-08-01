@@ -88,7 +88,19 @@ int main() {
 
   for (auto it = g.begin(); it != g.end(); it++)
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+  std::cout << "\n\n";
 
+  std::cout << "reverse\n";
+
+  for (auto it = g.rbegin(); it != g.rend(); it++)
+    std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+  std::cout << "\n\n reverse end\n";
+
+  for (auto it = g2.begin(); it != g2.end(); it++)
+    std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+
+
+  std::cout << "LMAO" << std::endl;
 
   gdwg::Graph<int, int> gempty;
   std::cout << (gempty.begin() == gempty.end()) << std::endl;

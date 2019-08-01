@@ -83,6 +83,7 @@ class Graph {
     typename graph_edges::iterator edge_iterator;
     typename std::set<E>::iterator weight_iterator;
 
+    typename graph_type::iterator node_iterator_begin;
     typename graph_type::iterator node_iterator_end;
   };
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -121,7 +122,7 @@ class Graph {
   const_iterator cbegin();
   const_iterator cend();
   const_reverse_iterator crbegin() { return const_reverse_iterator{cend()}; }
-  const_iterator crend() { return const_reverse_iterator{cbegin()}; }
+  const_reverse_iterator crend() { return const_reverse_iterator{cbegin()}; }
   const_iterator begin() { return cbegin(); }
   const_iterator end() { return cend(); }
   const_reverse_iterator rbegin() { return crbegin(); }
