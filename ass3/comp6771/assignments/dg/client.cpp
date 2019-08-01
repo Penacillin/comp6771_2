@@ -74,7 +74,7 @@ int main() {
   std::cout << "Is NA -> B ? : " << g.IsConnected("NA", "B") << std::endl;
 
   gdwg::Graph<std::string, int> g2;
-  g2 = std::move(g);
+  g2 = (g);
   // g2.Replace("B", "NB");
 
 
@@ -84,10 +84,8 @@ int main() {
   g2.DeleteNode("B");
   std::cout << g2 << "\n";
 
-  for (auto it = g2.begin(); it != g2.end(); ++it)
+  for (auto it = g.begin(); it != g.end(); it++)
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
-
-  std::cout << "lmao" << std::endl;
 
 
   // g.InsertNode("hello");

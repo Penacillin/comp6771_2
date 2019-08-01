@@ -74,7 +74,9 @@ gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(const gdwg::Graph<N, E>& rhs) {
   }
   for (const auto& it : rhs.adj_list_) {
     for (const auto& edge : it.second) {
-      this->InsertEdge(*it.first, *edge.first, edge.second);
+      for (const auto& weight : edge.second) {
+        this->InsertEdge(*it.first, *edge.first, weight);
+      }
       // auto graph_dst_node = this->adj_list_.find(edges)
       // if (this->adj_list_.)
       // ret.second.insert(typename graph_edges::value_type(, 1));
@@ -267,26 +269,28 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
   return res;
 }
 
+// const_iterator definitions
+
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
-  return const_iterator(this->adj_list_.begin(),
-      this->adj_list_.begin()->second.begin(),
-      this->adj_list_.begin()->second.begin()->second.begin(),
-      this->adj_list_.end());
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
+  return { this->adj_list_.begin(),
+          this->adj_list_.begin()->second.begin(),
+          this->adj_list_.begin()->second.begin()->second.begin(),
+          this->adj_list_.end() };
 }
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::end() {
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
   auto last_node = this->adj_list_.end();
   if (last_node != this->adj_list_.begin()) --last_node;
   auto last_edge = last_node->second.end();
   for (auto last_node_backward = last_node; last_node_backward->second.size() ==0;
     last_edge = (--last_node_backward)->second.end());
   --last_edge;
-  return const_iterator(this->adj_list_.end(),
-      last_node->second.end(),
-      last_edge->second.end(),
-      this->adj_list_.end());
+  return { this->adj_list_.end(),
+          last_node->second.end(),
+          last_edge->second.end(),
+          this->adj_list_.end() };
 }
 
 template <typename N, typename E>
@@ -296,6 +300,25 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
     ++this->edge_iterator;
     while (this->edge_iterator == this->node_iterator->second.end()) {
       ++this->node_iterator;
+      if (this->node_iterator == this->node_iterator_end) {
+        return *this;
+      }
+      this->edge_iterator = this->node_iterator->second.begin();
+    }
+    this->weight_iterator = this->edge_iterator->second.begin();
+  }
+  return *this;
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator--() {
+  // if ()
+
+  --this->weight_iterator;
+  if (this->weight_iterator == this->edge_iterator->second.end()) {
+    --this->edge_iterator;
+    while (this->edge_iterator == this->node_iterator->second.end()) {
+      --this->node_iterator;
       if (this->node_iterator == this->node_iterator_end) {
         return *this;
       }
