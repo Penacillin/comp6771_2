@@ -85,6 +85,7 @@ gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(const gdwg::Graph<N, E>& rhs) {
 
   return *this;
 }
+
 template <typename N, typename E>
 gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(gdwg::Graph<N, E>&& rhs) {
   std::swap(this->adj_list_, rhs.adj_list_);
@@ -273,9 +274,19 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
-  return { this->adj_list_.begin(),
-          this->adj_list_.begin()->second.begin(),
-          this->adj_list_.begin()->second.begin()->second.begin(),
+  typename graph_type::iterator node_iterator = this->adj_list_.begin();
+  typename graph_edges::iterator edge_iterator;
+  typename std::set<E>::iterator weight_iterator;
+  if (node_iterator != this->adj_list_.end()) {
+    edge_iterator = this->adj_list_.begin()->second.begin();
+  }
+  if (node_iterator != this->adj_list_.end()
+      && edge_iterator != node_iterator->second.end()) {
+    weight_iterator = edge_iterator->second.begin();
+  }
+  return { node_iterator,
+          edge_iterator,
+          weight_iterator,
           this->adj_list_.end() };
 }
 
@@ -284,9 +295,12 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
   auto last_node = this->adj_list_.end();
   if (last_node != this->adj_list_.begin()) --last_node;
   auto last_edge = last_node->second.end();
-  for (auto last_node_backward = last_node; last_node_backward->second.size() ==0;
+  auto last_node_backward = last_node;
+  for (; last_node_backward != this->adj_list_.end() && last_node_backward->second.size() ==0;
     last_edge = (--last_node_backward)->second.end());
-  --last_edge;
+  if (last_node_backward != this->adj_list_.end()
+      && last_edge != last_node_backward->second.begin())
+    --last_edge;
   return { this->adj_list_.end(),
           last_node->second.end(),
           last_edge->second.end(),

@@ -33,6 +33,16 @@ class Graph {
  public:
   class const_iterator {
    public:
+      const_iterator(typename graph_type::iterator gt_begin,
+                     typename graph_edges::iterator ge_begin,
+                     typename std::set<E>::iterator weights_begin,
+                     typename graph_type::iterator gt_end) {
+        this->node_iterator = gt_begin;
+        this->edge_iterator = ge_begin;
+        this->weight_iterator = weights_begin;
+        this->node_iterator_end = gt_end;
+      }
+
       using iterator_category = std::bidirectional_iterator_tag;
       using value_type = std::tuple<N, N, E>;
       using reference = std::tuple<const N&, const N&, const E&>;
@@ -110,8 +120,8 @@ class Graph {
   const_iterator erase(const_iterator it);
   const_iterator cbegin();
   const_iterator cend();
-  const_reverse_iterator crbegin();
-  const_iterator crend();
+  const_reverse_iterator crbegin() { return const_reverse_iterator{cend()}; }
+  const_iterator crend() { return const_reverse_iterator{cbegin()}; }
   const_iterator begin() { return cbegin(); }
   const_iterator end() { return cend(); }
   const_reverse_iterator rbegin() { return crbegin(); }

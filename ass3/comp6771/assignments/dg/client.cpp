@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-
+#include <cassert>
 #include <vector>
 
 #include "assignments/dg/graph.h"
@@ -71,7 +71,7 @@ int main() {
   std::cout << g << std::endl;
 
 
-  std::cout << "Is NA -> B ? : " << g.IsConnected("NA", "B") << std::endl;
+  assert(g.IsConnected("NA", "B") == 1);
 
   gdwg::Graph<std::string, int> g2;
   g2 = (g);
@@ -84,8 +84,14 @@ int main() {
   g2.DeleteNode("B");
   std::cout << g2 << "\n";
 
+  assert(g.InsertNode("B") == 0);
+
   for (auto it = g.begin(); it != g.end(); it++)
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+
+
+  gdwg::Graph<int, int> gempty;
+  std::cout << (gempty.begin() == gempty.end()) << std::endl;
 
 
   // g.InsertNode("hello");
