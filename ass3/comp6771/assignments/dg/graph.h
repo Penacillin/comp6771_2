@@ -33,15 +33,18 @@ class Graph {
  public:
   class const_iterator {
    public:
-      const_iterator(typename graph_type::iterator gt_begin,
-                     typename graph_edges::iterator ge_begin,
-                     typename std::set<E>::iterator weights_begin,
-                     typename graph_type::iterator gt_end) {
-        this->node_iterator = gt_begin;
-        this->edge_iterator = ge_begin;
-        this->weight_iterator = weights_begin;
-        this->node_iterator_end = gt_end;
-      }
+      const_iterator(const typename graph_type::const_iterator node_iter,
+                     const typename graph_edges::const_iterator edge_iter,
+                     const typename std::set<E>::const_iterator weight_iter,
+                     const typename graph_type::const_iterator gt_begin,
+                     const typename graph_type::const_iterator gt_end)
+        :
+        node_iterator(node_iter),
+        edge_iterator(edge_iter),
+        weight_iterator(weight_iter),
+        node_iterator_begin(gt_begin),
+        node_iterator_end(gt_end)
+        { }
 
       using iterator_category = std::bidirectional_iterator_tag;
       using value_type = std::tuple<N, N, E>;
@@ -50,6 +53,7 @@ class Graph {
       using difference_type = int;
 
       reference operator*() const;
+      pointer operator->() const { return &(operator*()); }
 
       const_iterator& operator++();
       const_iterator operator++(int) {
@@ -79,12 +83,12 @@ class Graph {
       }
 
    private:
-    typename graph_type::iterator node_iterator;
-    typename graph_edges::iterator edge_iterator;
-    typename std::set<E>::iterator weight_iterator;
+    typename graph_type::const_iterator node_iterator;
+    typename graph_edges::const_iterator edge_iterator;
+    typename std::set<E>::const_iterator weight_iterator;
 
-    typename graph_type::iterator node_iterator_begin;
-    typename graph_type::iterator node_iterator_end;
+    const typename graph_type::const_iterator node_iterator_begin;
+    const typename graph_type::const_iterator node_iterator_end;
   };
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -94,7 +98,7 @@ class Graph {
               const typename std::vector<N>::const_iterator end);
   Graph<N, E>(const typename std::vector<std::tuple<N, N, E>>::const_iterator,
               const typename std::vector<std::tuple<N, N, E>>::const_iterator);
-  Graph<N, E>(std::initializer_list<N>);
+  Graph<N, E>(const std::initializer_list<N>);
   Graph<N, E>(const gdwg::Graph<N, E>&);
   Graph<N, E>(gdwg::Graph<N, E>&&);
   ~Graph<N, E>();
@@ -108,25 +112,25 @@ class Graph {
   bool DeleteNode(const N&) noexcept;
   bool Replace(const N& oldData, const N& newData);
   void MergeReplace(const N& oldData, const N& newData);
-  void Clear();
-  bool IsNode(const N& val);
-  bool IsConnected(const N& src, const N& dst);
+  void Clear() noexcept;
+  bool IsNode(const N& val) const noexcept;
+  bool IsConnected(const N& src, const N& dst) const;
 
-  std::vector<N> GetNodes();
-  std::vector<N> GetConnected(const N& src);
-  std::vector<E> GetWeights(const N& src, const N& dst);
-  const_iterator find(const N&, const N&, const E&);
-  bool erase(const N& src, const N& dst, const E& w);
+  std::vector<N> GetNodes() const noexcept;
+  std::vector<N> GetConnected(const N& src) const;
+  std::vector<E> GetWeights(const N& src, const N& dst) const;
+  const_iterator find(const N&, const N&, const E&) const noexcept;
+  bool erase(const N& src, const N& dst, const E& w) noexcept;
 
-  const_iterator erase(const_iterator it);
-  const_iterator cbegin();
-  const_iterator cend();
-  const_reverse_iterator crbegin() { return const_reverse_iterator{cend()}; }
-  const_reverse_iterator crend() { return const_reverse_iterator{cbegin()}; }
-  const_iterator begin() { return cbegin(); }
-  const_iterator end() { return cend(); }
-  const_reverse_iterator rbegin() { return crbegin(); }
-  const_reverse_iterator rend() { return crend(); }
+  const_iterator erase(const_iterator it) noexcept;
+  const_iterator cbegin() const noexcept;
+  const_iterator cend() const noexcept;
+  const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator{cend()}; }
+  const_reverse_iterator crend() const noexcept { return const_reverse_iterator{cbegin()}; }
+  const_iterator begin() const noexcept { return cbegin(); }
+  const_iterator end() const noexcept { return cend(); }
+  const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+  const_reverse_iterator rend() const noexcept { return crend(); }
 
 
   // friend bool operator==(const gdwg::Graph<N, E>&, const gdwg::Graph<N, E>&);

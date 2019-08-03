@@ -26,7 +26,7 @@ gdwg::Graph<N, E>::Graph(const typename std::vector<std::tuple<N, N, E>>::const_
 }
 
 template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(std::initializer_list<N> init_list) {
+gdwg::Graph<N, E>::Graph(const std::initializer_list<N> init_list) {
   for (const auto& it : init_list) {
       auto node_ptr = std::make_shared<N>(it);
       this->adj_list_.insert(std::make_pair(node_ptr, graph_edges()));
@@ -196,18 +196,18 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
 }
 
 template <typename N, typename E>
-void gdwg::Graph<N ,E>::Clear() {
+void gdwg::Graph<N ,E>::Clear() noexcept {
   this->adj_list_.clear();
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsNode(const N& val) {
+bool gdwg::Graph<N, E>::IsNode(const N& val) const noexcept {
   const auto val_ptr = std::shared_ptr<N>(const_cast<N*>(&val), [](N*){});
   return this->adj_list_.find(val_ptr) != this->adj_list_.end();
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) {
+bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
   auto src_node = this->adj_list_.find(src_ptr);
   auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
@@ -223,7 +223,7 @@ bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) {
 }
 
 template <typename N, typename E>
-std::vector<N> gdwg::Graph<N, E>::GetNodes() {
+std::vector<N> gdwg::Graph<N, E>::GetNodes() const noexcept {
   std::vector<N> res(this->adj_list_.size());
 
   for (const auto& node : this->adj_list_) {
@@ -234,7 +234,7 @@ std::vector<N> gdwg::Graph<N, E>::GetNodes() {
 }
 
 template <typename N, typename E>
-std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) {
+std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
   auto src_node = this->adj_list_.find(src_ptr);
   if (src_node == this->adj_list_.end()) {
@@ -250,12 +250,12 @@ std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) {
 }
 
 template <typename N, typename E>
-std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
+std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
   auto src_node = this->adj_list_.find(src_ptr);
   auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
   auto dst_node = this->adj_list_.find(dst_ptr);
-  if (src_node == this->adj_list_.end() || dst_node == this->adj_list_.end()) {
+  if (src_node == this->adj_list_.cend() || dst_node == this->adj_list_.cend()) {
     throw std::out_of_range("Cannot call Graph::GetWeights if "
       " src or dst node don't exist in the graph");
   }
@@ -273,80 +273,101 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) {
 // const_iterator definitions
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
-  typename graph_type::iterator node_iterator = this->adj_list_.begin();
-  typename graph_edges::iterator edge_iterator;
-  typename std::set<E>::iterator weight_iterator;
-  if (node_iterator != this->adj_list_.end()) {
-    edge_iterator = this->adj_list_.begin()->second.begin();
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() const noexcept {
+  typename graph_type::const_iterator node_iterator = this->adj_list_.cbegin();
+  typename graph_edges::const_iterator edge_iterator;
+  typename std::set<E>::const_iterator weight_iterator;
+  if (node_iterator != this->adj_list_.cend()) {
+    edge_iterator = this->adj_list_.cbegin()->second.cbegin();
   }
-  if (node_iterator != this->adj_list_.end()
-      && edge_iterator != node_iterator->second.end()) {
-    weight_iterator = edge_iterator->second.begin();
+  if (node_iterator != this->adj_list_.cend()
+      && edge_iterator != node_iterator->second.cend()) {
+    weight_iterator = edge_iterator->second.cbegin();
   }
   return { node_iterator,
           edge_iterator,
           weight_iterator,
-          this->adj_list_.begin() 
-          this->adj_list_.end() };
+          this->adj_list_.cbegin(), 
+          this->adj_list_.cend() };
 }
 
-template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
-  typename graph_type::iterator node_iterator = this->adj_list_.end();
-  typename graph_edges::iterator edge_iterator;
-  typename std::set<E>::iterator weight_iterator;
 
-  auto node_reverse_iter = this->adj_list_.rbegin();
-  while(node_reverse_iter != this->adj_list_.rend()
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexcept {
+  typename graph_type::const_iterator node_iterator = this->adj_list_.cend();
+  typename graph_edges::const_iterator edge_iterator;
+  typename std::set<E>::const_iterator weight_iterator;
+
+  auto node_reverse_iter = this->adj_list_.crbegin();
+  while(node_reverse_iter != this->adj_list_.crend()
         && node_reverse_iter->second.size() == 0) {
     ++node_reverse_iter;
   }
 
-  if (node_reverse_iter != this->adj_list_.rend()) {
-    edge_iterator = node_reverse_iter->second.end();
-    auto edge_rev_iter = node_reverse_iter->second.rbegin();
-    weight_iterator = edge_rev_iter->second.end();
-    node_reverse_iter = this->adj_list_.rbegin();
+  if (node_reverse_iter != this->adj_list_.crend()) {
+    edge_iterator = node_reverse_iter->second.cend();
+    auto edge_rev_iter = node_reverse_iter->second.crbegin();
+    weight_iterator = edge_rev_iter->second.cend();
+    node_reverse_iter = this->adj_list_.crbegin();
   }
   return { node_iterator,
           edge_iterator,
           weight_iterator,
-          this->adj_list_.begin(),
-          this->adj_list_.end() };
+          this->adj_list_.cbegin(),
+          this->adj_list_.cend() };
 }
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator++() {
   ++this->weight_iterator;
-  if (this->weight_iterator == this->edge_iterator->second.end()) {
+  if (this->weight_iterator == this->edge_iterator->second.cend()) {
     ++this->edge_iterator;
-    while (this->edge_iterator == this->node_iterator->second.end()) {
+    while (this->edge_iterator == this->node_iterator->second.cend()) {
       ++this->node_iterator;
       if (this->node_iterator == this->node_iterator_end) {
         return *this;
       }
-      this->edge_iterator = this->node_iterator->second.begin();
+      this->edge_iterator = this->node_iterator->second.cbegin();
     }
-    this->weight_iterator = this->edge_iterator->second.begin();
+    this->weight_iterator = this->edge_iterator->second.cbegin();
   }
   return *this;
 }
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator--() {
-  if (this->weight_iterator == this->edge_iterator->second.begin()) {
-    if (this->edge_iterator == this->node_iterator->second.begin()) {
-      while(this->node_iterator != this->node_iterator_begin
+  // std::cout << "operator--" << std::endl;
+  if (this->node_iterator == this->node_iterator_end) {
+    --this->node_iterator;
+    while (this->node_iterator != this->node_iterator_begin
             && this->node_iterator->second.size() == 0) {
-      --this->node_iterator;              
+      --this->node_iterator;
+    }
+
+    this->edge_iterator = this->node_iterator->second.end();
+    --this->edge_iterator;
+    this->weight_iterator = this->edge_iterator->second.end();
+    --this->weight_iterator;
+  } else if (this->weight_iterator == this->edge_iterator->second.begin()) {
+    if (this->edge_iterator == this->node_iterator->second.begin()) {
+      --this->node_iterator;
+      while( this->node_iterator != this->node_iterator_begin
+            && this->node_iterator->second.size() == 0) {
+        --this->node_iterator;
       }
       this->edge_iterator = this->node_iterator->second.end();
       --this->edge_iterator;
+      this->weight_iterator = this->edge_iterator->second.end();
+      --this->weight_iterator;
+    } else {
+      --this->edge_iterator;
+      this->weight_iterator = this->edge_iterator->second.end();
+      --this->weight_iterator;
     }
-    this->weight_iterator = this->edge_iterator->second.end();
+  } else {
     --this->weight_iterator;
   }
+
   return *this;
 }
 

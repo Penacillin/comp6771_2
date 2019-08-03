@@ -92,8 +92,10 @@ int main() {
 
   std::cout << "reverse\n";
 
-  for (auto it = g.rbegin(); it != g.rend(); it++)
-    std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+  for (auto it = g.rbegin(); it != g.rend(); ++it) {
+    const auto phoebe = *it;
+    std::cout << std::get<0>(phoebe) << std::get<1>(phoebe) << std::get<2>(phoebe)  << std::endl;
+  }
   std::cout << "\n\n reverse end\n";
 
   for (auto it = g2.begin(); it != g2.end(); it++)
