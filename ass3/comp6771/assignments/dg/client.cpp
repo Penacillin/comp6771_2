@@ -98,7 +98,8 @@ int main() {
 
   auto finder = g.find("B", "NA", 2);
   std::cout << std::get<0>(*finder) << std::get<1>(*finder) << std::get<2>(*finder)  << std::endl;
-
+  auto finder2 = g.find("D", "NA", 2);
+  std::cout << (finder2 == g.end()) << std::endl;
 
   std::cout << "reverse\n";
 
@@ -127,6 +128,25 @@ int main() {
     std::cout << "teeehee" << std::endl;
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
   }
+
+
+  std::cout << std::endl;
+  std::cout << "ERASING " << std::endl;
+  std::cout << g << std::endl;
+  auto erit = g.begin();
+  ++erit; ++erit; ++erit; ++erit;
+  std::cout << std::get<0>(*erit) << std::get<1>(*erit) << std::get<2>(*erit)  << std::endl;
+  auto erit2 = g.erase("B", "NA", 2);
+  std::cout << "ERASED" << std::endl;
+  // if (erit2 != g.cend())
+  //   std::cout << std::get<0>(*erit2) << std::get<1>(*erit2) << std::get<2>(*erit2)  << std::endl;
+  std::cout << erit2 << std::endl;
+  std::cout << g << std::endl;
+
+  std::vector<int> lolv{1,2,3};
+  auto lolvit = lolv.begin();
+  lolvit++;
+  std::cout << lolvit.base() << std::endl;
 
 
   // g.InsertNode("hello");

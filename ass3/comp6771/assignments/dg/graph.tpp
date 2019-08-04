@@ -273,17 +273,90 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator
 gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& weight) const noexcept {
-  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
-  auto src_node = this->adj_list_.find(src_ptr);
-  auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
-  auto dst_node = src_node->second.find(dst_ptr);
-  auto weight_ptr = std::shared_ptr<E>(const_cast<E*>(&weight), [](E*){});
-  auto weight_node = dst_node->second.find(weight);
+  const auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  typename graph_type::const_iterator src_node = this->adj_list_.find(src_ptr);
+  const auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
+  if (src_node == this->adj_list_.cend()) return cend();
+  typename graph_edges::const_iterator dst_node = src_node->second.find(dst_ptr);
+  if (dst_node == src_node->second.cend()) return cend();
+  typename std::set<E>::const_iterator weight_node = dst_node->second.find(weight);
+  if (weight_node == dst_node->second.cend()) return cend();
 
-  if (src_node == this->adj_list_.cend()
-      || dst_node == src_node->second.cend()
-      || weight_node == dst_node->second.cend()) {
-    return cend();
+  return {
+    src_node,
+    dst_node,
+    weight_node,
+    this->adj_list_.begin(), 
+    this->adj_list_.end()
+  };
+}
+
+
+// 'std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> > > > >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::adj_list_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> > > > > > > >::const_iterator
+// 'std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> > > > >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::adj_list_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp, std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>, std::allocator<int> > > > > > > >::iterator
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& weight) noexcept {
+  if (erase(find(src, dst, weight)) == cend()) return false;
+  return true;
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator
+gdwg::Graph<N, E>::erase(const_iterator __position) noexcept {
+  if (__position == cend()) return __position;
+
+  // auto it_base = __position.base();
+  // auto& const_src_node = std::get<0>(it_base);
+  // auto& const_dst_node = std::get<1>(it_base);
+  // auto& const_weight_node = std::get<2>(it_base);
+
+  // typename graph_type::iterator src_node;
+  // std::advance(src_node,
+  //   std::distance<typename graph_type::const_iterator>(src_node, const_src_node));
+  // typename graph_edges::iterator dst_node;
+  // std::advance(dst_node,
+  //   std::distance<typename graph_edges::const_iterator>(dst_node, const_dst_node));
+  // typename std::set<E>::iterator weight_node;
+  // std::advance(weight_node,
+  //   std::distance<typename std::set<E>::const_iterator>(weight_node, const_weight_node));
+
+  const auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<0>(*__position)), [](N*){});
+  typename graph_type::iterator src_node = this->adj_list_.find(src_ptr);
+  const auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<1>(*__position)), [](N*){});
+  if (src_node == this->adj_list_.cend()) return cend();
+  typename graph_edges::iterator dst_node = src_node->second.find(dst_ptr);
+  if (dst_node == src_node->second.cend()) return cend();
+  typename std::set<E>::iterator weight_node =
+    dst_node->second.find(std::get<2>(*__position));
+  if (weight_node == dst_node->second.cend()) return cend();
+
+  weight_node = dst_node->second.erase(weight_node);
+  if (weight_node == dst_node->second.cend()) {
+    // either erase edge and increment, or just increment
+    if (dst_node->second.empty()) {
+      dst_node = src_node->second.erase(dst_node);
+      if (dst_node == src_node->second.cend()) {
+        if (src_node->second.empty()) {
+          src_node = this->adj_list_.erase(src_node);
+        } else {
+          ++src_node;
+        }
+        // look for next non empty src
+        while(src_node != this->adj_list_.cend()
+              && src_node->second.empty()) ++src_node;
+
+        if (src_node != this->adj_list_.cend()) {
+          dst_node = src_node->second.begin();
+          weight_node = dst_node->second.begin();
+        }
+      } else {
+        weight_node = dst_node->second.begin();
+      }
+    } else {
+      ++dst_node;
+      weight_node = dst_node->second.begin();
+    }
   }
   return {
     src_node,
@@ -301,27 +374,27 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() const noe
   typename graph_type::const_iterator node_iterator = this->adj_list_.cbegin();
   typename graph_edges::const_iterator edge_iterator;
   typename std::set<E>::const_iterator weight_iterator;
-  while(node_iterator != this->adj_list_.cend()
+  while(node_iterator != this->adj_list_.end()
         && node_iterator->second.size() == 0)
     ++node_iterator;
   if (node_iterator != this->adj_list_.cend()) {
-    edge_iterator = node_iterator->second.cbegin();
+    edge_iterator = node_iterator->second.begin();
   }
-  if (node_iterator != this->adj_list_.cend()
-      && edge_iterator != node_iterator->second.cend()) {
-    weight_iterator = edge_iterator->second.cbegin();
+  if (node_iterator != this->adj_list_.end()
+      && edge_iterator != node_iterator->second.end()) {
+    weight_iterator = edge_iterator->second.begin();
   }
   return { node_iterator,
           edge_iterator,
           weight_iterator,
-          this->adj_list_.cbegin(), 
-          this->adj_list_.cend() };
+          this->adj_list_.begin(), 
+          this->adj_list_.end() };
 }
 
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexcept {
-  typename graph_type::const_iterator node_iterator = this->adj_list_.cend();
+  typename graph_type::const_iterator node_iterator = this->adj_list_.end();
   typename graph_edges::const_iterator edge_iterator;
   typename std::set<E>::const_iterator weight_iterator;
 
@@ -337,6 +410,8 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexc
     auto edge_rev_iter = node_reverse_iter->second.crbegin();
     weight_iterator = edge_rev_iter->second.cend();
   }
+
+  
   return { node_iterator,
           edge_iterator,
           weight_iterator,
@@ -354,9 +429,9 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
       if (this->node_iterator == this->node_iterator_end) {
         return *this;
       }
-      this->edge_iterator = this->node_iterator->second.cbegin();
+      this->edge_iterator = this->node_iterator->second.begin();
     }
-    this->weight_iterator = this->edge_iterator->second.cbegin();
+    this->weight_iterator = this->edge_iterator->second.begin();
   }
   return *this;
 }

@@ -73,9 +73,9 @@ class Graph {
         //           << (lhs.edge_iterator == rhs.edge_iterator)
         //           << (lhs.weight_iterator == rhs.weight_iterator)
         //           << (lhs.node_iterator == lhs.node_iterator_end)<< std::endl;
-        // if (lhs.node_iterator == lhs.node_iterator_end
-        //   && rhs.node_iterator == rhs.node_iterator_end)
-        //   return true;
+        if (lhs.node_iterator == lhs.node_iterator_end
+          && rhs.node_iterator == rhs.node_iterator_end)
+          return true;
         return lhs.node_iterator == rhs.node_iterator
               && lhs.edge_iterator == rhs.edge_iterator
               && lhs.weight_iterator == rhs.weight_iterator;
@@ -85,7 +85,21 @@ class Graph {
         return !(lhs == rhs);
       }
 
-   private:
+      std::tuple<typename graph_type::const_iterator,
+                 typename graph_edges::const_iterator,
+                 typename std::set<E>::const_iterator,
+                 typename graph_type::const_iterator,
+                 typename graph_type::const_iterator> base() {
+        return {
+          node_iterator,
+          edge_iterator,
+          weight_iterator,
+          node_iterator_begin,
+          node_iterator_end
+        };
+      }
+
+   protected:
     typename graph_type::const_iterator node_iterator;
     typename graph_edges::const_iterator edge_iterator;
     typename std::set<E>::const_iterator weight_iterator;
