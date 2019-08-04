@@ -90,6 +90,16 @@ int main() {
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
   std::cout << "\n\n";
 
+
+  for (const auto& it : g.GetConnected("C")) {
+    std::cout << it << " ";
+  }
+  std::cout << std::endl;
+
+  auto finder = g.find("B", "NA", 2);
+  std::cout << std::get<0>(*finder) << std::get<1>(*finder) << std::get<2>(*finder)  << std::endl;
+
+
   std::cout << "reverse\n";
 
   for (auto it = g.rbegin(); it != g.rend(); ++it) {
@@ -98,14 +108,25 @@ int main() {
   }
   std::cout << "\n\n reverse end\n";
 
-  for (auto it = g2.begin(); it != g2.end(); it++)
+  for (auto it = g2.begin(); it != g2.end(); it++) {
+    std::cout << "teeehee" << std::endl;
     std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+  }
 
 
   std::cout << "LMAO" << std::endl;
+  fflush(stdout);
 
   gdwg::Graph<int, int> gempty;
   std::cout << (gempty.begin() == gempty.end()) << std::endl;
+
+  gdwg::Graph<int, int> gstartempy{1, 2};
+  gstartempy.InsertEdge(2, 1, 3);
+  std::cout << gstartempy << std::endl;
+  for (auto it = gstartempy.rbegin(); it != gstartempy.rend(); it++) {
+    std::cout << "teeehee" << std::endl;
+    std::cout << std::get<0>(*it) << std::get<1>(*it) << std::get<2>(*it)  << std::endl;
+  }
 
 
   // g.InsertNode("hello");

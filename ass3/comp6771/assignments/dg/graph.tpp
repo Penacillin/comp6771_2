@@ -240,7 +240,7 @@ std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) const {
   if (src_node == this->adj_list_.end()) {
     throw std::out_of_range("Cannot call Graph::GetConnected if src doesn't exist in the graph");
   }
-  std::vector<N> res();
+  std::vector<N> res;
 
   for (const auto& node : src_node->second) {
     res.push_back(*node.first);
@@ -270,6 +270,30 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
   return res;
 }
 
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator
+gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& weight) const noexcept {
+  auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*){});
+  auto src_node = this->adj_list_.find(src_ptr);
+  auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*){});
+  auto dst_node = src_node->second.find(dst_ptr);
+  auto weight_ptr = std::shared_ptr<E>(const_cast<E*>(&weight), [](E*){});
+  auto weight_node = dst_node->second.find(weight);
+
+  if (src_node == this->adj_list_.cend()
+      || dst_node == src_node->second.cend()
+      || weight_node == dst_node->second.cend()) {
+    return cend();
+  }
+  return {
+    src_node,
+    dst_node,
+    weight_node,
+    this->adj_list_.cbegin(), 
+    this->adj_list_.cend()
+  };
+}
+
 // const_iterator definitions
 
 template <typename N, typename E>
@@ -277,8 +301,11 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() const noe
   typename graph_type::const_iterator node_iterator = this->adj_list_.cbegin();
   typename graph_edges::const_iterator edge_iterator;
   typename std::set<E>::const_iterator weight_iterator;
+  while(node_iterator != this->adj_list_.cend()
+        && node_iterator->second.size() == 0)
+    ++node_iterator;
   if (node_iterator != this->adj_list_.cend()) {
-    edge_iterator = this->adj_list_.cbegin()->second.cbegin();
+    edge_iterator = node_iterator->second.cbegin();
   }
   if (node_iterator != this->adj_list_.cend()
       && edge_iterator != node_iterator->second.cend()) {
@@ -299,16 +326,16 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexc
   typename std::set<E>::const_iterator weight_iterator;
 
   auto node_reverse_iter = this->adj_list_.crbegin();
+  if (node_reverse_iter != this->adj_list_.crend())
+    edge_iterator = node_reverse_iter->second.cend();
   while(node_reverse_iter != this->adj_list_.crend()
         && node_reverse_iter->second.size() == 0) {
     ++node_reverse_iter;
   }
 
   if (node_reverse_iter != this->adj_list_.crend()) {
-    edge_iterator = node_reverse_iter->second.cend();
     auto edge_rev_iter = node_reverse_iter->second.crbegin();
     weight_iterator = edge_rev_iter->second.cend();
-    node_reverse_iter = this->adj_list_.crbegin();
   }
   return { node_iterator,
           edge_iterator,

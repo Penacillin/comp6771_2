@@ -73,6 +73,9 @@ class Graph {
         //           << (lhs.edge_iterator == rhs.edge_iterator)
         //           << (lhs.weight_iterator == rhs.weight_iterator)
         //           << (lhs.node_iterator == lhs.node_iterator_end)<< std::endl;
+        // if (lhs.node_iterator == lhs.node_iterator_end
+        //   && rhs.node_iterator == rhs.node_iterator_end)
+        //   return true;
         return lhs.node_iterator == rhs.node_iterator
               && lhs.edge_iterator == rhs.edge_iterator
               && lhs.weight_iterator == rhs.weight_iterator;
