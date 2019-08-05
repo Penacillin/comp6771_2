@@ -1,12 +1,12 @@
 #ifndef ASSIGNMENTS_DG_GRAPH_H_
 #define ASSIGNMENTS_DG_GRAPH_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <tuple>
 #include <utility>
 #include <vector>
-#include <map>
 
 #include <iostream>
 
@@ -23,7 +23,7 @@ class Graph {
 
   struct graph_edges_cmp {
     bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
-        return *lhs < *rhs;
+      return *lhs < *rhs;
     }
   };
 
@@ -33,71 +33,60 @@ class Graph {
  public:
   class const_iterator {
    public:
-      const_iterator(const typename graph_type::const_iterator node_iter,
-                     const typename graph_edges::const_iterator edge_iter,
-                     const typename std::set<E>::const_iterator weight_iter,
-                     const typename graph_type::const_iterator gt_begin,
-                     const typename graph_type::const_iterator gt_end)
-        :
-        node_iterator(node_iter),
-        edge_iterator(edge_iter),
-        weight_iterator(weight_iter),
-        node_iterator_begin(gt_begin),
-        node_iterator_end(gt_end)
-        { }
+    const_iterator(const typename graph_type::const_iterator node_iter,
+                   const typename graph_edges::const_iterator edge_iter,
+                   const typename std::set<E>::const_iterator weight_iter,
+                   const typename graph_type::const_iterator gt_begin,
+                   const typename graph_type::const_iterator gt_end)
+      : node_iterator(node_iter), edge_iterator(edge_iter), weight_iterator(weight_iter),
+        node_iterator_begin(gt_begin), node_iterator_end(gt_end) {}
 
-      using iterator_category = std::bidirectional_iterator_tag;
-      using value_type = std::tuple<N, N, E>;
-      using reference = std::tuple<const N&, const N&, const E&>;
-      using pointer = value_type*;
-      using difference_type = int;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = std::tuple<N, N, E>;
+    using reference = std::tuple<const N&, const N&, const E&>;
+    using pointer = value_type*;
+    using difference_type = int;
 
-      reference operator*() const;
-      pointer operator->() const { return &(operator*()); }
+    reference operator*() const;
+    pointer operator->() const { return &(operator*()); }
 
-      const_iterator& operator++();
-      const_iterator operator++(int) {
-        auto copy{*this};
-        ++(*this);
-        return copy;
-      }
-      const_iterator& operator--();
-      const_iterator operator--(int) {
-        auto copy{*this};
-        --(*this);
-        return copy;
-      }
+    const_iterator& operator++();
+    const_iterator operator++(int) {
+      auto copy{*this};
+      ++(*this);
+      return copy;
+    }
+    const_iterator& operator--();
+    const_iterator operator--(int) {
+      auto copy{*this};
+      --(*this);
+      return copy;
+    }
 
-      friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-        // std::cout << (lhs.node_iterator == rhs.node_iterator)
-        //           << (lhs.edge_iterator == rhs.edge_iterator)
-        //           << (lhs.weight_iterator == rhs.weight_iterator)
-        //           << (lhs.node_iterator == lhs.node_iterator_end)<< std::endl;
-        if (lhs.node_iterator == lhs.node_iterator_end
-          && rhs.node_iterator == rhs.node_iterator_end)
-          return true;
-        return lhs.node_iterator == rhs.node_iterator
-              && lhs.edge_iterator == rhs.edge_iterator
-              && lhs.weight_iterator == rhs.weight_iterator;
-      }
+    friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+      // std::cout << (lhs.node_iterator == rhs.node_iterator)
+      //           << (lhs.edge_iterator == rhs.edge_iterator)
+      //           << (lhs.weight_iterator == rhs.weight_iterator)
+      //           << (lhs.node_iterator == lhs.node_iterator_end)<< std::endl;
+      if (lhs.node_iterator == lhs.node_iterator_end && rhs.node_iterator == rhs.node_iterator_end)
+        return true;
+      return lhs.node_iterator == rhs.node_iterator && lhs.edge_iterator == rhs.edge_iterator &&
+             lhs.weight_iterator == rhs.weight_iterator;
+    }
 
-      friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
-        return !(lhs == rhs);
-      }
+    friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+      return !(lhs == rhs);
+    }
 
-      std::tuple<typename graph_type::const_iterator,
-                 typename graph_edges::const_iterator,
-                 typename std::set<E>::const_iterator,
-                 typename graph_type::const_iterator,
-                 typename graph_type::const_iterator> base() {
-        return {
-          node_iterator,
-          edge_iterator,
-          weight_iterator,
-          node_iterator_begin,
-          node_iterator_end
-        };
-      }
+    std::tuple<typename graph_type::const_iterator,
+               typename graph_edges::const_iterator,
+               typename std::set<E>::const_iterator,
+               typename graph_type::const_iterator,
+               typename graph_type::const_iterator>
+    base() {
+      return {node_iterator, edge_iterator, weight_iterator, node_iterator_begin,
+              node_iterator_end};
+    }
 
    protected:
     typename graph_type::const_iterator node_iterator;
@@ -108,7 +97,6 @@ class Graph {
     const typename graph_type::const_iterator node_iterator_end;
   };
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
 
   Graph<N, E>();
   Graph<N, E>(const typename std::vector<N>::const_iterator start,
@@ -121,8 +109,8 @@ class Graph {
   ~Graph<N, E>();
 
   // Assignment operators
-  Graph<N, E>& operator=(const gdwg::Graph<N, E>&);
-  Graph<N, E>& operator=(gdwg::Graph<N, E>&&);
+  Graph<N, E>& operator=(const gdwg::Graph<N, E>&) noexcept;
+  Graph<N, E>& operator=(gdwg::Graph<N, E>&&) noexcept;
 
   bool InsertNode(const N& val) noexcept;
   bool InsertEdge(const N& src, const N& dst, const E& w);
@@ -149,15 +137,18 @@ class Graph {
   const_reverse_iterator rbegin() const noexcept { return crbegin(); }
   const_reverse_iterator rend() const noexcept { return crend(); }
 
-
-  // friend bool operator==(const gdwg::Graph<N, E>&, const gdwg::Graph<N, E>&);
-  // friend bool operator!=(const gdwg::Graph<N, E>&, const gdwg::Graph<N, E>&);
+  friend bool operator==(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
+    return true;
+  }
+  friend bool operator!=(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
+    return !(lhs == rhs);
+  }
   friend std::ostream& operator<<(std::ostream& os, const Graph& g) {
     for (const auto& it : g.adj_list_) {
       os << *(it.first) << " (" << std::endl;
       for (const auto& edge : it.second) {
         for (const auto& weight : edge.second) {
-          os << "  " << *edge.first << " | " << weight << std::endl;;
+          os << "  " << *edge.first << " | " << weight << std::endl;
         }
       }
       os << ")" << std::endl;
