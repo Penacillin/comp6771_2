@@ -15,31 +15,38 @@ namespace gdwg {
 template <typename N, typename E>
 class Graph {
  private:
-  struct adj_list_cmp {
+  struct AdjListComparator {
     bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
       return *lhs < *rhs;
     }
   };
 
-  struct graph_edges_cmp {
+  struct GraphEdgesComparator {
     bool operator()(const std::shared_ptr<N>& lhs, const std::shared_ptr<N>& rhs) const {
       return *lhs < *rhs;
     }
   };
 
-  using graph_edges = std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp>;
-  using graph_type = std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp>;
+  using GraphEdges = std::map<std::shared_ptr<N>, std::set<E>, GraphEdgesComparator>;
+  using GraphRepresentation = std::map<std::shared_ptr<N>, GraphEdges, AdjListComparator>;
 
  public:
   class const_iterator {
    public:
-    const_iterator(const typename graph_type::const_iterator node_iter,
-                   const typename graph_edges::const_iterator edge_iter,
+    const_iterator(const typename GraphRepresentation::const_iterator node_iter,
+                   const typename GraphEdges::const_iterator edge_iter,
                    const typename std::set<E>::const_iterator weight_iter,
-                   const typename graph_type::const_iterator gt_begin,
-                   const typename graph_type::const_iterator gt_end)
-      : node_iterator(node_iter), edge_iterator(edge_iter), weight_iterator(weight_iter),
-        node_iterator_begin(gt_begin), node_iterator_end(gt_end) {}
+                   const typename GraphRepresentation::const_iterator gt_begin,
+                   const typename GraphRepresentation::const_iterator gt_end)
+      : node_iterator_(node_iter), edge_iterator_(edge_iter), weight_iterator_(weight_iter),
+        node_iterator_begin_(gt_begin), node_iterator_end_(gt_end) {}
+
+    const_iterator& operator=(const const_iterator& rhs) {
+      this->node_iterator_ = rhs.node_iterator_;
+      this->edge_iterator_ = rhs.edge_iterator_;
+      this->weight_iterator_ = rhs.weight_iterator_;
+      return *this;
+    }
 
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = std::tuple<N, N, E>;
@@ -64,37 +71,34 @@ class Graph {
     }
 
     friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-      // std::cout << (lhs.node_iterator == rhs.node_iterator)
-      //           << (lhs.edge_iterator == rhs.edge_iterator)
-      //           << (lhs.weight_iterator == rhs.weight_iterator)
-      //           << (lhs.node_iterator == lhs.node_iterator_end)<< std::endl;
-      if (lhs.node_iterator == lhs.node_iterator_end && rhs.node_iterator == rhs.node_iterator_end)
+      if (lhs.node_iterator_ == lhs.node_iterator_end_ &&
+          rhs.node_iterator_ == rhs.node_iterator_end_)
         return true;
-      return lhs.node_iterator == rhs.node_iterator && lhs.edge_iterator == rhs.edge_iterator &&
-             lhs.weight_iterator == rhs.weight_iterator;
+      return lhs.node_iterator_ == rhs.node_iterator_ && lhs.edge_iterator_ == rhs.edge_iterator_ &&
+             lhs.weight_iterator_ == rhs.weight_iterator_;
     }
 
     friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
       return !(lhs == rhs);
     }
 
-    std::tuple<typename graph_type::const_iterator,
-               typename graph_edges::const_iterator,
+    std::tuple<typename GraphRepresentation::const_iterator,
+               typename GraphEdges::const_iterator,
                typename std::set<E>::const_iterator,
-               typename graph_type::const_iterator,
-               typename graph_type::const_iterator>
+               typename GraphRepresentation::const_iterator,
+               typename GraphRepresentation::const_iterator>
     base() {
-      return {node_iterator, edge_iterator, weight_iterator, node_iterator_begin,
-              node_iterator_end};
+      return {node_iterator_, edge_iterator_, weight_iterator_, node_iterator_begin_,
+              node_iterator_end_};
     }
 
    protected:
-    typename graph_type::const_iterator node_iterator;
-    typename graph_edges::const_iterator edge_iterator;
-    typename std::set<E>::const_iterator weight_iterator;
+    typename GraphRepresentation::const_iterator node_iterator_;
+    typename GraphEdges::const_iterator edge_iterator_;
+    typename std::set<E>::const_iterator weight_iterator_;
 
-    const typename graph_type::const_iterator node_iterator_begin;
-    const typename graph_type::const_iterator node_iterator_end;
+    const typename GraphRepresentation::const_iterator node_iterator_begin_;
+    const typename GraphRepresentation::const_iterator node_iterator_end_;
   };
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -109,22 +113,42 @@ class Graph {
   ~Graph<N, E>();
 
   // Assignment operators
-  Graph<N, E>& operator=(const gdwg::Graph<N, E>&) noexcept;
+  Graph<N, E>& operator=(const Graph<N, E>&) noexcept;
   Graph<N, E>& operator=(gdwg::Graph<N, E>&&) noexcept;
 
+  // Insert Node into graph
+  // Returns true if successfully inserted
   bool InsertNode(const N& val) noexcept;
+  // Insert Edge into graph
+  // Returns true if successfully inserted
   bool InsertEdge(const N& src, const N& dst, const E& w);
+  // Deletes a node and all references to it
+  // Returns true if successfully inserted
   bool DeleteNode(const N&) noexcept;
+  // Replaces a nodes value with a new one
+  // Returns true if successfully changed, otherwise false if newData already
+  // exists.
   bool Replace(const N& oldData, const N& newData);
+  // Merges an existing Node into another node which also exists
+  // And Deletes old node.
   void MergeReplace(const N& oldData, const N& newData);
+  // Clears the graph
   void Clear() noexcept;
+  // Check if a node exists in a graph
   bool IsNode(const N& val) const noexcept;
+  // Check if two nodes are connected by at least 1 edge
   bool IsConnected(const N& src, const N& dst) const;
 
   std::vector<N> GetNodes() const noexcept;
+  // Gets all destination nodes for a source node
   std::vector<N> GetConnected(const N& src) const;
+  // Gets all weights of edges between two nodes
   std::vector<E> GetWeights(const N& src, const N& dst) const;
+  // Gets a iterator to an edge which matches parameters
+  // Otherwise returns end
   const_iterator find(const N&, const N&, const E&) const noexcept;
+  // Erases an edge as described by params
+  // Returns true if successfully removed, false otherwise
   bool erase(const N& src, const N& dst, const E& w) noexcept;
 
   const_iterator erase(const_iterator it) noexcept;
@@ -138,19 +162,43 @@ class Graph {
   const_reverse_iterator rend() const noexcept { return crend(); }
 
   friend bool operator==(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
-    auto lhs_iter = lhs.begin();
-    auto rhs_iter = rhs.begin();
+    auto lhs_node_it = lhs.adj_list_.begin();
+    auto rhs_node_it = rhs.adj_list_.begin();
+    if (lhs.adj_list_.size() != rhs.adj_list_.size())
+      return false;
+    while (lhs_node_it != lhs.adj_list_.end() && rhs_node_it != rhs.adj_list_.end()) {
+      if (lhs_node_it->second.size() != rhs_node_it->second.size() ||
+          *lhs_node_it->first != *rhs_node_it->first)
+        return false;
+      auto lhs_dst_it = lhs_node_it->second.begin();
+      auto rhs_dst_it = rhs_node_it->second.begin();
+      while (lhs_dst_it != lhs_node_it->second.end() && rhs_dst_it != rhs_node_it->second.end()) {
+        if (lhs_dst_it->second.size() != rhs_dst_it->second.size() ||
+            *lhs_dst_it->first != *rhs_dst_it->first)
+          return false;
+        auto lhs_w_it = lhs_dst_it->second.begin();
+        auto rhs_w_it = rhs_dst_it->second.begin();
 
-    while (lhs_iter != lhs.end() && rhs_iter != rhs.end()) {
-      if (*lhs == *rhs) return false;
+        while (lhs_w_it != lhs_dst_it->second.end() && rhs_w_it != rhs_dst_it->second.end()) {
+          if (lhs_w_it != rhs_w_it)
+            return false;
+          ++lhs_w_it;
+          ++rhs_w_it;
+        }
+        ++lhs_dst_it;
+        ++rhs_dst_it;
+      }
+      ++lhs_node_it;
+      ++rhs_node_it;
     }
-    if (lhs_iter != lhs.end() || rhs_iter != rhs.end()) return false;
+
     return true;
   }
 
   friend bool operator!=(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
     return !(lhs == rhs);
   }
+
   friend std::ostream& operator<<(std::ostream& os, const Graph& g) {
     for (const auto& it : g.adj_list_) {
       os << *(it.first) << " (" << std::endl;
@@ -165,7 +213,9 @@ class Graph {
   }
 
  private:
-  graph_type adj_list_;
+  GraphRepresentation adj_list_;
+
+  Graph<N, E>& _copy_graph(const Graph<N, E>& rhs) noexcept;
 };
 
 }  // namespace gdwg

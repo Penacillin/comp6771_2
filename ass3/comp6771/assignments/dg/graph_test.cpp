@@ -1083,3 +1083,111 @@ SCENARIO("the class iterator can be used to traverse over the graph backwards") 
     }
   }
 }
+
+// Testing iterators (deleting)
+SCENARIO("the class iterator can be used to traverse over the graph forwards and erase") {
+  GIVEN("A graph with 1 node and 1 edge to itself") {
+    gdwg::Graph<int, int> g{1};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the one edge would be begin") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+        AND_THEN("erasing at this iterator would return an iterator to end") {
+          it = g.erase(it);
+          REQUIRE(it == g.end());
+          REQUIRE(g.GetNodes().size() == 0);
+        }
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and each has an edge to itself") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+
+        AND_THEN("The next edge will be 2->2 (2), and deleting this") {
+          ++it;
+          it = g.erase(it);
+          AND_THEN("The next edge will be the end") {
+            REQUIRE(it == g.end());
+            REQUIRE(g.GetNodes().size() == 1);
+            REQUIRE(g.IsNode(2) == false);
+          }
+        }
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and 3 edges (1-1, 1-2, 2-2)") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(1, 2, 3);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the edges can be traversed over and we can delete 1->2(3)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE((from == 1 && to == 1 && weight == 1));
+        ++it;
+        const auto& [from2, to2, weight2] = *it;
+        REQUIRE((from2 == 1 && to2 == 2 && weight2 == 3));
+        it = g.erase(it);
+        const auto& [from3, to3, weight3] = *it;
+        REQUIRE((from3 == 2 && to3 == 2 && weight3 == 2));
+        ++it;
+        REQUIRE(it == g.end());
+
+        AND_THEN("The graph will have 2 edges") {
+          auto connected = g.GetConnected(1);
+          REQUIRE(connected.size() == 1);
+          REQUIRE(connected[0] == 1);
+          REQUIRE(g.GetConnected(2).size() == 1);
+        }
+      }
+    }
+  }
+}
+
+SCENARIO("With multiple graphs, their equality can be tested") {
+  GIVEN("Two empty graphs") {
+    gdwg::Graph<int, int> g;
+    gdwg::Graph<int, int> g2;
+
+    THEN("These two graphs should be equal") {
+      REQUIRE(g == g2);
+    }
+  }
+
+  GIVEN("Two graphs with 1 equivalent node") {
+    gdwg::Graph<int, int> g{1};
+    gdwg::Graph<int, int> g2{1};
+
+    THEN("These two graphs should be equal") {
+      REQUIRE(g == g2);
+    }
+  }
+
+  GIVEN("Two graphs with 1 non equivalent node") {
+    gdwg::Graph<int, int> g{1};
+    gdwg::Graph<int, int> g2{2};
+    THEN("These two graphs should be non equal") {
+      REQUIRE(!(g == g2));
+      REQUIRE(g != g2);
+    }
+  }
+}

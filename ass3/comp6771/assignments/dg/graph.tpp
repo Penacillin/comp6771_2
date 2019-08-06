@@ -3,21 +3,23 @@
 #include <algorithm>
 #include <iostream>
 
-template <typename N, typename E>
-gdwg::Graph<N, E>::Graph() {}
+namespace gdwg {
 
 template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(const typename std::vector<N>::const_iterator start,
-                         const typename std::vector<N>::const_iterator end) {
+Graph<N, E>::Graph() {}
+
+template <typename N, typename E>
+Graph<N, E>::Graph(const typename std::vector<N>::const_iterator start,
+                   const typename std::vector<N>::const_iterator end) {
   for (auto it = start; it != end; ++it) {
     auto node_ptr = std::make_shared<N>(*it);
-    this->adj_list_.insert(std::make_pair(node_ptr, graph_edges()));
+    this->adj_list_.insert(std::make_pair(node_ptr, GraphEdges()));
   }
 }
 
 template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(const typename std::vector<std::tuple<N, N, E>>::const_iterator start,
-                         const typename std::vector<std::tuple<N, N, E>>::const_iterator end) {
+Graph<N, E>::Graph(const typename std::vector<std::tuple<N, N, E>>::const_iterator start,
+                   const typename std::vector<std::tuple<N, N, E>>::const_iterator end) {
   for (auto it = start; it != end; ++it) {
     this->InsertNode(std::get<0>(*it));
     this->InsertNode(std::get<1>(*it));
@@ -26,19 +28,16 @@ gdwg::Graph<N, E>::Graph(const typename std::vector<std::tuple<N, N, E>>::const_
 }
 
 template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(const std::initializer_list<N> init_list) {
+Graph<N, E>::Graph(const std::initializer_list<N> init_list) {
   for (const auto& it : init_list) {
     auto node_ptr = std::make_shared<N>(it);
-    this->adj_list_.insert(std::make_pair(node_ptr, graph_edges()));
+    this->adj_list_.insert(std::make_pair(node_ptr, GraphEdges()));
   }
 }
 
 template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& rhs) {
+Graph<N, E>& Graph<N, E>::_copy_graph(const Graph<N, E>& rhs) noexcept {
   for (const auto& it : rhs.adj_list_) {
-
-    // auto node_ptr = std::make_shared<N>(*it.first);
-    // auto ret = this->adj_list_.insert(typename graph_type::value_type(node_ptr, graph_edges()));
     this->InsertNode(*it.first);
   }
   for (const auto& it : rhs.adj_list_) {
@@ -46,40 +45,6 @@ gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& rhs) {
       for (const auto& weight : edge.second) {
         this->InsertEdge(*it.first, *edge.first, weight);
       }
-      // auto graph_dst_node = this->adj_list_.find(edges)
-      // if (this->adj_list_.)
-      // ret.second.insert(typename graph_edges::value_type(, 1));
-    }
-  }
-}
-
-template <typename N, typename E>
-gdwg::Graph<N, E>::Graph(gdwg::Graph<N, E>&& rhs) {
-  std::swap(this->adj_list_, rhs.adj_list_);
-}
-
-template <typename N, typename E>
-gdwg::Graph<N, E>::~Graph() {}
-
-template <typename N, typename E>
-gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(const gdwg::Graph<N, E>& rhs) noexcept {
-  if (this == &rhs)
-    return *this;
-  this->Clear();
-
-  for (const auto& it : rhs.adj_list_) {
-    // auto node_ptr = std::make_shared<N>(*it.first);
-    // auto ret = this->adj_list_.insert(typename graph_type::value_type(node_ptr, graph_edges()));
-    this->InsertNode(*it.first);
-  }
-  for (const auto& it : rhs.adj_list_) {
-    for (const auto& edge : it.second) {
-      for (const auto& weight : edge.second) {
-        this->InsertEdge(*it.first, *edge.first, weight);
-      }
-      // auto graph_dst_node = this->adj_list_.find(edges)
-      // if (this->adj_list_.)
-      // ret.second.insert(typename graph_edges::value_type(, 1));
     }
   }
 
@@ -87,22 +52,47 @@ gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(const gdwg::Graph<N, E>& rhs) no
 }
 
 template <typename N, typename E>
-gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(gdwg::Graph<N, E>&& rhs) noexcept {
+Graph<N, E>::Graph(const Graph<N, E>& rhs) {
+  _copy_graph(rhs);
+}
+
+template <typename N, typename E>
+Graph<N, E>::Graph(Graph<N, E>&& rhs) {
+  std::swap(this->adj_list_, rhs.adj_list_);
+}
+
+template <typename N, typename E>
+Graph<N, E>::~Graph() {}
+
+template <typename N, typename E>
+Graph<N, E>& Graph<N, E>::operator=(const Graph<N, E>& rhs) noexcept {
+  if (this == &rhs)
+    return *this;
+  this->Clear();
+
+  _copy_graph(rhs);
+
+  return *this;
+}
+
+template <typename N, typename E>
+Graph<N, E>& Graph<N, E>::operator=(Graph<N, E>&& rhs) noexcept {
   std::swap(this->adj_list_, rhs.adj_list_);
   rhs.adj_list_.clear();
   return *this;
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::InsertNode(const N& val) noexcept {
+bool Graph<N, E>::InsertNode(const N& val) noexcept {
   auto node_ptr = std::make_shared<N>(val);
-  auto ret = this->adj_list_.insert(typename graph_type::value_type(node_ptr, graph_edges()));
+  auto ret =
+      this->adj_list_.insert(typename GraphRepresentation::value_type(node_ptr, GraphEdges()));
 
   return ret.second;
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
+bool Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
   // std::make_shared<N>(src)
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*) {});
   auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*) {});
@@ -116,18 +106,17 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
 
   auto src_dst_node = src_node->second.find(dst_ptr);
   if (src_dst_node == src_node->second.end()) {
-    src_node->second.insert(typename graph_edges::value_type(dst_node->first, std::set<E>({w})));
+    src_node->second.insert(typename GraphEdges::value_type(dst_node->first, std::set<E>({w})));
 
     return true;
   } else {
     auto ret = src_dst_node->second.insert(w);
     return ret.second;
   }
-  // const auto ret = src_node->second.insert(typename graph_edges::value_type(dst_node->first, w));
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
+bool Graph<N, E>::Replace(const N& oldData, const N& newData) {
   auto oldData_ptr = std::shared_ptr<N>(const_cast<N*>(&oldData), [](N*) {});
   auto newData_ptr = std::shared_ptr<N>(const_cast<N*>(&newData), [](N*) {});
   auto oldData_node = this->adj_list_.find(oldData_ptr);
@@ -157,26 +146,15 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
   return true;
 }
 
+// Deletes a node and all references to it
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
+bool Graph<N, E>::DeleteNode(const N& val) noexcept {
   bool removed = false;
   for (auto it = this->adj_list_.begin(); it != this->adj_list_.end();) {
     if (!(*it->first < val || val < *it->first)) {
       it = this->adj_list_.erase(it);
       removed = true;
     } else {
-      // auto found_res = std::find_if(it->second.begin(), it->second.end(),
-      //   [](graph_edges& edge) {
-      //     if(*edge->first == val) return true;
-      //     return false;
-      //   }
-      // );
-
-      // if (found_res != it->second.end()) {
-      //   edge = it->second.erase(found_res);
-      //   removed = true;
-      // }
-      
       for (auto edge = it->second.begin(); edge != it->second.end();) {
         if (*edge->first == val) {
           edge = it->second.erase(edge);
@@ -186,15 +164,15 @@ bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
         }
       }
 
-
       ++it;
     }
   }
   return removed;
 }
 
+// Merges a node into a another one
 template <typename N, typename E>
-void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
+void Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
   auto oldData_ptr = std::shared_ptr<N>(const_cast<N*>(&oldData), [](N*) {});
   auto newData_ptr = std::shared_ptr<N>(const_cast<N*>(&newData), [](N*) {});
   auto oldData_node = this->adj_list_.find(oldData_ptr);
@@ -204,25 +182,29 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
     throw std::runtime_error("Cannot call Graph::MergeReplace on old or new data"
                              " if they don't exist in the graph");
   }
-  if (oldData == newData) return;
+  if (oldData == newData)
+    return;
 
   newData_node->second.insert(oldData_node->second.begin(), oldData_node->second.end());
   this->adj_list_.erase(oldData_node);
 }
 
+// Clears the graph
 template <typename N, typename E>
-void gdwg::Graph<N, E>::Clear() noexcept {
+void Graph<N, E>::Clear() noexcept {
   this->adj_list_.clear();
 }
 
+// Checks if a node exists in a graph
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsNode(const N& val) const noexcept {
+bool Graph<N, E>::IsNode(const N& val) const noexcept {
   const auto val_ptr = std::shared_ptr<N>(const_cast<N*>(&val), [](N*) {});
   return this->adj_list_.find(val_ptr) != this->adj_list_.end();
 }
 
+// Checks if two nodes are connected by at least 1 edge
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
+bool Graph<N, E>::IsConnected(const N& src, const N& dst) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*) {});
   auto src_node = this->adj_list_.find(src_ptr);
   auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*) {});
@@ -236,8 +218,9 @@ bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
   return src_node->second.find(dst_ptr) != src_node->second.end();
 }
 
+// Gets a vector of all nodes in the graph
 template <typename N, typename E>
-std::vector<N> gdwg::Graph<N, E>::GetNodes() const noexcept {
+std::vector<N> Graph<N, E>::GetNodes() const noexcept {
   std::vector<N> res;
 
   for (const auto& node : this->adj_list_) {
@@ -247,8 +230,9 @@ std::vector<N> gdwg::Graph<N, E>::GetNodes() const noexcept {
   return res;
 }
 
+// Gets all connected destination nodes from a source node
 template <typename N, typename E>
-std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) const {
+std::vector<N> Graph<N, E>::GetConnected(const N& src) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*) {});
   auto src_node = this->adj_list_.find(src_ptr);
   if (src_node == this->adj_list_.end()) {
@@ -263,8 +247,9 @@ std::vector<N> gdwg::Graph<N, E>::GetConnected(const N& src) const {
   return res;
 }
 
+// Gets weights between two nodes
 template <typename N, typename E>
-std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
+std::vector<E> Graph<N, E>::GetWeights(const N& src, const N& dst) const {
   auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*) {});
   auto src_node = this->adj_list_.find(src_ptr);
   auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*) {});
@@ -275,7 +260,6 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
   }
 
   auto src_dst_node = src_node->second.find(dst_ptr);
-  // std::vector<E> res(src_dst_node->second.size());
   std::vector<E> res;
   for (const auto& node : src_dst_node->second) {
     res.push_back(node);
@@ -284,15 +268,17 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
   return res;
 }
 
+// Gets an iterator to an edge described by params
+// Returns end if no such edge could be found
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator
-gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& weight) const noexcept {
+typename Graph<N, E>::const_iterator
+Graph<N, E>::find(const N& src, const N& dst, const E& weight) const noexcept {
   const auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&src), [](N*) {});
-  typename graph_type::const_iterator src_node = this->adj_list_.find(src_ptr);
+  typename GraphRepresentation::const_iterator src_node = this->adj_list_.find(src_ptr);
   const auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&dst), [](N*) {});
   if (src_node == this->adj_list_.cend())
     return cend();
-  typename graph_edges::const_iterator dst_node = src_node->second.find(dst_ptr);
+  typename GraphEdges::const_iterator dst_node = src_node->second.find(dst_ptr);
   if (dst_node == src_node->second.cend())
     return cend();
   typename std::set<E>::const_iterator weight_node = dst_node->second.find(weight);
@@ -302,66 +288,32 @@ gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& weight) const noexc
   return {src_node, dst_node, weight_node, this->adj_list_.begin(), this->adj_list_.end()};
 }
 
-// 'std::map<std::shared_ptr<std::__cxx11::basic_string<char> >,
-// std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>,
-// std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp,
-// std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int,
-// std::less<int>, std::allocator<int> > > > >, gdwg::Graph<std::__cxx11::basic_string<char>,
-// int>::adj_list_cmp, std::allocator<std::pair<const
-// std::shared_ptr<std::__cxx11::basic_string<char> >,
-// std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>,
-// std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp,
-// std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int,
-// std::less<int>, std::allocator<int> > > > > > > >::const_iterator
-// 'std::map<std::shared_ptr<std::__cxx11::basic_string<char> >,
-// std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>,
-// std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp,
-// std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int,
-// std::less<int>, std::allocator<int> > > > >, gdwg::Graph<std::__cxx11::basic_string<char>,
-// int>::adj_list_cmp, std::allocator<std::pair<const
-// std::shared_ptr<std::__cxx11::basic_string<char> >,
-// std::map<std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int, std::less<int>,
-// std::allocator<int> >, gdwg::Graph<std::__cxx11::basic_string<char>, int>::graph_edges_cmp,
-// std::allocator<std::pair<const std::shared_ptr<std::__cxx11::basic_string<char> >, std::set<int,
-// std::less<int>, std::allocator<int> > > > > > > >::iterator
-
+// Erases an edge that is described by the parameters
+// Returns false if successfully removed an edge, false otherwise
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& weight) noexcept {
+bool Graph<N, E>::erase(const N& src, const N& dst, const E& weight) noexcept {
   if (erase(find(src, dst, weight)) == cend())
     return false;
   return true;
 }
 
+// Erases the value pointed to by iterator, and returns an iterator pointing to
+// the value next in the container
+// Returns end iterator if iterator invalid
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator
-gdwg::Graph<N, E>::erase(const_iterator __position) noexcept {
-  if (__position == cend())
-    return __position;
+typename Graph<N, E>::const_iterator Graph<N, E>::erase(const_iterator _position) noexcept {
+  if (_position == cend())
+    return _position;
 
-  // auto it_base = __position.base();
-  // auto& const_src_node = std::get<0>(it_base);
-  // auto& const_dst_node = std::get<1>(it_base);
-  // auto& const_weight_node = std::get<2>(it_base);
-
-  // typename graph_type::iterator src_node;
-  // std::advance(src_node,
-  //   std::distance<typename graph_type::const_iterator>(src_node, const_src_node));
-  // typename graph_edges::iterator dst_node;
-  // std::advance(dst_node,
-  //   std::distance<typename graph_edges::const_iterator>(dst_node, const_dst_node));
-  // typename std::set<E>::iterator weight_node;
-  // std::advance(weight_node,
-  //   std::distance<typename std::set<E>::const_iterator>(weight_node, const_weight_node));
-
-  const auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<0>(*__position)), [](N*) {});
-  typename graph_type::iterator src_node = this->adj_list_.find(src_ptr);
-  const auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<1>(*__position)), [](N*) {});
+  const auto src_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<0>(*_position)), [](N*) {});
+  typename GraphRepresentation::iterator src_node = this->adj_list_.find(src_ptr);
+  const auto dst_ptr = std::shared_ptr<N>(const_cast<N*>(&std::get<1>(*_position)), [](N*) {});
   if (src_node == this->adj_list_.cend())
     return cend();
-  typename graph_edges::iterator dst_node = src_node->second.find(dst_ptr);
+  typename GraphEdges::iterator dst_node = src_node->second.find(dst_ptr);
   if (dst_node == src_node->second.cend())
     return cend();
-  typename std::set<E>::iterator weight_node = dst_node->second.find(std::get<2>(*__position));
+  typename std::set<E>::iterator weight_node = dst_node->second.find(std::get<2>(*_position));
   if (weight_node == dst_node->second.cend())
     return cend();
 
@@ -395,12 +347,14 @@ gdwg::Graph<N, E>::erase(const_iterator __position) noexcept {
   return {src_node, dst_node, weight_node, this->adj_list_.cbegin(), this->adj_list_.cend()};
 }
 
+
+
 // const_iterator definitions
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() const noexcept {
-  typename graph_type::const_iterator node_iterator = this->adj_list_.cbegin();
-  typename graph_edges::const_iterator edge_iterator;
+typename Graph<N, E>::const_iterator Graph<N, E>::cbegin() const noexcept {
+  typename GraphRepresentation::const_iterator node_iterator = this->adj_list_.cbegin();
+  typename GraphEdges::const_iterator edge_iterator;
   typename std::set<E>::const_iterator weight_iterator;
   while (node_iterator != this->adj_list_.end() && node_iterator->second.size() == 0)
     ++node_iterator;
@@ -415,9 +369,9 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() const noe
 }
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexcept {
-  typename graph_type::const_iterator node_iterator = this->adj_list_.end();
-  typename graph_edges::const_iterator edge_iterator;
+typename Graph<N, E>::const_iterator Graph<N, E>::cend() const noexcept {
+  typename GraphRepresentation::const_iterator node_iterator = this->adj_list_.end();
+  typename GraphEdges::const_iterator edge_iterator;
   typename std::set<E>::const_iterator weight_iterator;
 
   auto node_reverse_iter = this->adj_list_.crbegin();
@@ -436,62 +390,64 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() const noexc
           this->adj_list_.cend()};
 }
 
+
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator++() {
-  ++this->weight_iterator;
-  if (this->weight_iterator == this->edge_iterator->second.cend()) {
-    ++this->edge_iterator;
-    while (this->edge_iterator == this->node_iterator->second.cend()) {
-      ++this->node_iterator;
-      if (this->node_iterator == this->node_iterator_end) {
+typename Graph<N, E>::const_iterator& Graph<N, E>::const_iterator::operator++() {
+  ++this->weight_iterator_;
+  if (this->weight_iterator_ == this->edge_iterator_->second.cend()) {
+    ++this->edge_iterator_;
+    while (this->edge_iterator_ == this->node_iterator_->second.cend()) {
+      ++this->node_iterator_;
+      if (this->node_iterator_ == this->node_iterator_end_) {
         return *this;
       }
-      this->edge_iterator = this->node_iterator->second.begin();
+      this->edge_iterator_ = this->node_iterator_->second.begin();
     }
-    this->weight_iterator = this->edge_iterator->second.begin();
+    this->weight_iterator_ = this->edge_iterator_->second.begin();
   }
   return *this;
 }
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator--() {
+typename Graph<N, E>::const_iterator& Graph<N, E>::const_iterator::operator--() {
   // std::cout << "operator--" << std::endl;
-  if (this->node_iterator == this->node_iterator_end) {
-    --this->node_iterator;
-    while (this->node_iterator != this->node_iterator_begin &&
-           this->node_iterator->second.size() == 0) {
-      --this->node_iterator;
+  if (this->node_iterator_ == this->node_iterator_end_) {
+    --this->node_iterator_;
+    while (this->node_iterator_ != this->node_iterator_begin_ &&
+           this->node_iterator_->second.size() == 0) {
+      --this->node_iterator_;
     }
 
-    this->edge_iterator = this->node_iterator->second.end();
-    --this->edge_iterator;
-    this->weight_iterator = this->edge_iterator->second.end();
-    --this->weight_iterator;
-  } else if (this->weight_iterator == this->edge_iterator->second.begin()) {
-    if (this->edge_iterator == this->node_iterator->second.begin()) {
-      --this->node_iterator;
-      while (this->node_iterator != this->node_iterator_begin &&
-             this->node_iterator->second.size() == 0) {
-        --this->node_iterator;
+    this->edge_iterator_ = this->node_iterator_->second.end();
+    --this->edge_iterator_;
+    this->weight_iterator_ = this->edge_iterator_->second.end();
+    --this->weight_iterator_;
+  } else if (this->weight_iterator_ == this->edge_iterator_->second.begin()) {
+    if (this->edge_iterator_ == this->node_iterator_->second.begin()) {
+      --this->node_iterator_;
+      while (this->node_iterator_ != this->node_iterator_begin_ &&
+             this->node_iterator_->second.size() == 0) {
+        --this->node_iterator_;
       }
-      this->edge_iterator = this->node_iterator->second.end();
-      --this->edge_iterator;
-      this->weight_iterator = this->edge_iterator->second.end();
-      --this->weight_iterator;
+      this->edge_iterator_ = this->node_iterator_->second.end();
+      --this->edge_iterator_;
+      this->weight_iterator_ = this->edge_iterator_->second.end();
+      --this->weight_iterator_;
     } else {
-      --this->edge_iterator;
-      this->weight_iterator = this->edge_iterator->second.end();
-      --this->weight_iterator;
+      --this->edge_iterator_;
+      this->weight_iterator_ = this->edge_iterator_->second.end();
+      --this->weight_iterator_;
     }
   } else {
-    --this->weight_iterator;
+    --this->weight_iterator_;
   }
 
   return *this;
 }
 
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator::reference gdwg::Graph<N, E>::const_iterator::
-operator*() const {
-  return {*this->node_iterator->first, *this->edge_iterator->first, *this->weight_iterator};
+typename Graph<N, E>::const_iterator::reference Graph<N, E>::const_iterator::operator*() const {
+  return {*this->node_iterator_->first, *this->edge_iterator_->first, *this->weight_iterator_};
 }
+
+}  // namespace gdwg
