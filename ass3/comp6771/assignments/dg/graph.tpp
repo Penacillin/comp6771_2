@@ -1,5 +1,6 @@
 #include "graph.h"
 
+#include <algorithm>
 #include <iostream>
 
 template <typename N, typename E>
@@ -160,10 +161,22 @@ template <typename N, typename E>
 bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
   bool removed = false;
   for (auto it = this->adj_list_.begin(); it != this->adj_list_.end();) {
-    if (*it->first == val) {
+    if (!(*it->first < val || val < *it->first)) {
       it = this->adj_list_.erase(it);
       removed = true;
     } else {
+      // auto found_res = std::find_if(it->second.begin(), it->second.end(),
+      //   [](graph_edges& edge) {
+      //     if(*edge->first == val) return true;
+      //     return false;
+      //   }
+      // );
+
+      // if (found_res != it->second.end()) {
+      //   edge = it->second.erase(found_res);
+      //   removed = true;
+      // }
+      
       for (auto edge = it->second.begin(); edge != it->second.end();) {
         if (*edge->first == val) {
           edge = it->second.erase(edge);
@@ -172,6 +185,8 @@ bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
           ++edge;
         }
       }
+
+
       ++it;
     }
   }

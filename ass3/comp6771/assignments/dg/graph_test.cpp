@@ -2,6 +2,20 @@
 
   == Explanation and rational of testing ==
 
+By going through each section of the Graph api, we can ensure 
+that each significant section works as expected. So that while
+testing the other sections these features can be relied upon.
+
+Also by chaining some modifications/accessing, this helps check
+the validity of the graph as we operate upon it.
+
+Of course, for each major functionality, we test with many different
+varities of input (such as size, and shape of input)
+
+By going through each part of the class, and testing them to a degree
+which is appapriate to their complexity, we can ensure with fairly
+high levels of confidence the soundness of the Graph implementation.
+
   Explain and justify how you approached testing, the degree
    to which you're certain you have covered all possibilities,
    and why you think your tests are that thorough.
@@ -806,52 +820,266 @@ SCENARIO("Graphs can have nodes/edges removed") {
 
 
 // Testing iterators
-
-SCENARIO("Graphs can be cleared") {
+SCENARIO("the class iterator can be used to traverse over the graph forwards") {
   GIVEN("An empty graph") {
     gdwg::Graph<int, int> g;
-    auto os = std::ostringstream();
-    os << g;
-    REQUIRE(os.str() == "");
-    g.Clear();
-    os << g;
-    REQUIRE(os.str() == "");
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the begin iterator would be equal to end") {
+        REQUIRE(it == g.end());
+      }
+    }
   }
 
-  GIVEN("A graph with one node") {
+  GIVEN("A graph with one node and no edges") {
     gdwg::Graph<int, int> g{1};
 
-    auto os = std::ostringstream();
-    os << g;
-    REQUIRE(os.str() == "1 (\n)\n");
-    g.Clear();
-    auto os2 = std::ostringstream();
-    os2 << g;
-    REQUIRE(os2.str() == "");
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the begin iterator would be equal to end") {
+        REQUIRE(it == g.end());
+      }
+    }
   }
 
-  GIVEN("A graph with 3 nodes which only have edges to itself") {
-    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+  GIVEN("A graph with 1 node and 1 edge to itself") {
+    gdwg::Graph<int, int> g{1};
+    g.InsertEdge(1, 1, 1);
 
-    g.InsertEdge("1", "1", 1);
-    g.InsertEdge("2", "2", 2);
-    g.InsertEdge("3", "3", 3);
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the one edge would be begin") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+      AND_THEN("Moving iterator forward would result in it being equal to end") {
+        ++it;
+        REQUIRE(it == g.end());
+      }
+    }
+  }
 
-    auto os = std::ostringstream();
-    os << g;
-    REQUIRE(os.str() == R"&(1 (
-  1 | 1
-)
-2 (
-  2 | 2
-)
-3 (
-  3 | 3
-)
-)&");
-    g.Clear();
-    auto os2 = std::ostringstream();
-    os2 << g;
-    REQUIRE(os2.str() == "");
+  GIVEN("A graph with 2 nodes (1,2) and an edge from 1->1") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+
+      AND_THEN("The next edge will be the end") {
+        ++it;
+        REQUIRE(it == g.end());
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and an edge from 2->2") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+
+      AND_THEN("The next edge will be the end") {
+        ++it;
+        REQUIRE(it == g.end());
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and each has an edge to itself") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+
+      AND_THEN("The next edge will be 2->2 (2)") {
+        ++it;
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 2);
+        REQUIRE(to == 2);
+        REQUIRE(weight == 2);
+        AND_THEN("The next edge will be the end") {
+          ++it;
+          REQUIRE(it == g.end());
+        }
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and 3 edges (1-1, 1-2, 2-2)") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(1, 2, 3);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.begin();
+      THEN("the edges can be traversed over") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE((from == 1 && to == 1 && weight == 1));
+        ++it;
+        const auto& [from2, to2, weight2] = *it;
+        REQUIRE((from2 == 1 && to2 == 2 && weight2 == 3));
+        ++it;
+        const auto& [from3, to3, weight3] = *it;
+        REQUIRE((from3 == 2 && to3 == 2 && weight3 == 2));
+      }
+    }
+  }
+}
+
+SCENARIO("the class iterator can be used to traverse over the graph backwards") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("the rbegin iterator would be equal to end") {
+        REQUIRE(it == g.rend());
+      }
+    }
+  }
+
+  GIVEN("A graph with one node and no edges") {
+    gdwg::Graph<int, int> g{1};
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("the rbegin iterator would be equal to rend") {
+        REQUIRE(it == g.rend());
+      }
+    }
+  }
+
+  GIVEN("A graph with 1 node and 1 edge to itself") {
+    gdwg::Graph<int, int> g{1};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("the one edge would be rbegin") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+      AND_THEN("Moving iterator forward would result in it being equal to rend") {
+        ++it;
+        REQUIRE(it == g.rend());
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and an edge from 1->1") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+
+      AND_THEN("The next edge will be the rend") {
+        ++it;
+        REQUIRE(it == g.rend());
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and an edge from 2->2") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+      }
+
+      AND_THEN("The next edge will be the rend") {
+        ++it;
+        REQUIRE(it == g.rend());
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and each has an edge to itself") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("first edge will be 1->1 (1)") {
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 2);
+        REQUIRE(to == 2);
+        REQUIRE(weight == 2);
+      }
+
+      AND_THEN("The next edge will be 2->2 (2)") {
+        ++it;
+        const auto& [from, to, weight] = *it;
+        REQUIRE(from == 1);
+        REQUIRE(to == 1);
+        REQUIRE(weight == 1);
+        AND_THEN("The next edge will be the rend") {
+          ++it;
+          REQUIRE(it == g.rend());
+        }
+      }
+    }
+  }
+
+  GIVEN("A graph with 2 nodes (1,2) and 3 edges (1-1, 1-2, 2-2)") {
+    gdwg::Graph<int, int> g{1, 2};
+    g.InsertEdge(1, 1, 1);
+    g.InsertEdge(1, 2, 3);
+    g.InsertEdge(2, 2, 2);
+
+    WHEN("Iterating over it") {
+      auto it = g.rbegin();
+      THEN("the edges can be traversed over") {
+        const auto& [from3, to3, weight3] = *it;
+        REQUIRE((from3 == 2 && to3 == 2 && weight3 == 2));
+        ++it;
+        const auto& [from2, to2, weight2] = *it;
+        REQUIRE((from2 == 1 && to2 == 2 && weight2 == 3));
+        ++it;
+        const auto& [from, to, weight] = *it;
+        REQUIRE((from == 1 && to == 1 && weight == 1));
+      }
+    }
   }
 }
