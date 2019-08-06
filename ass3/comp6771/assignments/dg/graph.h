@@ -27,8 +27,8 @@ class Graph {
     }
   };
 
-  typedef std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp> graph_edges;
-  typedef std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp> graph_type;
+  using graph_edges = std::map<std::shared_ptr<N>, std::set<E>, graph_edges_cmp>;
+  using graph_type = std::map<std::shared_ptr<N>, graph_edges, adj_list_cmp>;
 
  public:
   class const_iterator {
@@ -138,8 +138,16 @@ class Graph {
   const_reverse_iterator rend() const noexcept { return crend(); }
 
   friend bool operator==(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
+    auto lhs_iter = lhs.begin();
+    auto rhs_iter = rhs.begin();
+
+    while (lhs_iter != lhs.end() && rhs_iter != rhs.end()) {
+      if (*lhs == *rhs) return false;
+    }
+    if (lhs_iter != lhs.end() || rhs_iter != rhs.end()) return false;
     return true;
   }
+
   friend bool operator!=(const gdwg::Graph<N, E>& lhs, const gdwg::Graph<N, E>& rhs) {
     return !(lhs == rhs);
   }

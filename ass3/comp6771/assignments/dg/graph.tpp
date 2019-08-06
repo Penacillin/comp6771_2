@@ -187,8 +187,9 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
 
   if (oldData_node == this->adj_list_.end() || newData_node == this->adj_list_.end()) {
     throw std::runtime_error("Cannot call Graph::MergeReplace on old or new data"
-                             "if they don't exist in the graph");
+                             " if they don't exist in the graph");
   }
+  if (oldData == newData) return;
 
   newData_node->second.insert(oldData_node->second.begin(), oldData_node->second.end());
   this->adj_list_.erase(oldData_node);
@@ -222,7 +223,7 @@ bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
 
 template <typename N, typename E>
 std::vector<N> gdwg::Graph<N, E>::GetNodes() const noexcept {
-  std::vector<N> res(this->adj_list_.size());
+  std::vector<N> res;
 
   for (const auto& node : this->adj_list_) {
     res.push_back(*node.first);

@@ -264,9 +264,23 @@ SCENARIO("Graphs can be constructed and then can be manipulated using insert/del
 5 (
   1 | 3
   5 | 1
-))&");
+)
+)&");
             }
+          }
 
+          AND_WHEN("We add more nodes (6, 7)") {
+            g.InsertNode(6);
+            g.InsertNode(7);
+
+            THEN("The grpah should now have 5 nodes") {
+              REQUIRE(g.GetNodes().size() == 5);
+              REQUIRE(g.IsNode(1));
+              REQUIRE(g.IsNode(2));
+              REQUIRE(g.IsNode(3));
+              REQUIRE(g.IsNode(6));
+              REQUIRE(g.IsNode(7));
+            }
           }
         }
       }
@@ -290,5 +304,554 @@ SCENARIO("Graphs can be constructed and then can be manipulated using insert/del
         }
       }
     }
+  }
+}
+
+
+SCENARIO("Mergereplace will work under various conditions of graphs") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+
+    WHEN("We try merge replace a non-existant node to another") {
+      THEN("It will throw an exception") {
+        REQUIRE_THROWS_WITH(g.MergeReplace(1, 2),
+          "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
+      }
+    }
+  }
+
+  GIVEN("A graph with one node") {
+    gdwg::Graph<int, int> g{1};
+
+    WHEN("We try merge replace an existing node into a non-existant node") {
+      THEN("It will throw an exception") {
+        REQUIRE_THROWS_WITH(g.MergeReplace(1, 2),
+          "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
+      }
+    }
+
+    WHEN("We try merge non existant node to an existant node") {
+      THEN("It will throw an exception") {
+        REQUIRE_THROWS_WITH(g.MergeReplace(2, 1),
+          "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes which only have edges to itself") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+
+    WHEN("we merge replace 1 into 2") {
+      g.MergeReplace("1", "2");
+
+      THEN("We expect the graph to have 1's edges merged into 2s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(2 (
+  1 | 1
+  2 | 2
+)
+3 (
+  3 | 3
+)
+)&");
+      }
+    }
+
+    WHEN("we merge replace 3 into 1") {
+      g.MergeReplace("3", "1");
+
+      THEN("We expect the graph to have 3's edges merged into 1s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(1 (
+  1 | 1
+  3 | 3
+)
+2 (
+  2 | 2
+)
+)&");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes and edges to itself and each other") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("1", "2", 1);
+    g.InsertEdge("1", "3", 2);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+    g.InsertEdge("2", "1", 3);
+    g.InsertEdge("2", "3", 4);
+    g.InsertEdge("3", "1", 5);
+    g.InsertEdge("3", "2", 6);
+
+    WHEN("we merge replace 3 into 1") {
+      g.MergeReplace("3", "1");
+
+      THEN("We expect the graph to have 3's edges merged into 1s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(1 (
+  1 | 1
+  2 | 1
+  3 | 2
+)
+2 (
+  1 | 3
+  2 | 2
+  3 | 4
+)
+)&");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes and edges to itself and the next") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("1", "2", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+    g.InsertEdge("2", "3", 4);
+    g.InsertEdge("3", "1", 5);
+
+    WHEN("we merge replace 3 into 1") {
+      g.MergeReplace("3", "1");
+
+      THEN("We expect the graph to have 3's edges merged into 1s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(1 (
+  1 | 1
+  2 | 1
+  3 | 3
+)
+2 (
+  2 | 2
+  3 | 4
+)
+)&");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes, 2 with edges to each other and a node with no edges") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "2", 1);
+    g.InsertEdge("2", "2", 2);
+
+    WHEN("we merge replace 3 into 1") {
+      g.MergeReplace("3", "1");
+
+      THEN("We expect the graph to have 3's edges merged into 1s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(1 (
+  2 | 1
+)
+2 (
+  2 | 2
+)
+)&");
+      }
+    }
+
+    WHEN("we merge replace 1 into 3") {
+      g.MergeReplace("1", "3");
+
+      THEN("We expect the graph to have 3's edges merged into 1s (deduplicated)") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(2 (
+  2 | 2
+)
+3 (
+  2 | 1
+)
+)&");
+      }
+    }
+
+    WHEN("we merge replace 1 into 2") {
+      g.MergeReplace("1", "2");
+
+      THEN("We expect the graph to have 1's edges merged into 2, and 3 be empty") {
+        auto os = std::ostringstream();
+        os << g;
+        REQUIRE(os.str() == R"&(2 (
+  2 | 2
+)
+3 (
+)
+)&");
+      }
+    }
+  }
+}
+
+// Test Getters
+SCENARIO("Graph information can be queried through Get Nodes/Connected/Weights") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "");
+
+    THEN("There should be n nodes") {
+      REQUIRE(g.GetNodes().size() == 0);
+    }
+  }
+
+  GIVEN("A graph with one node") {
+    gdwg::Graph<int, int> g{1};
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "1 (\n)\n");
+
+    WHEN("We request the nodes") {
+      auto nodes = g.GetNodes();
+      THEN("There should be one node (1)") {
+        REQUIRE(nodes.size() == 1);
+        REQUIRE(nodes[0] == 1);
+      }
+    }
+
+    WHEN("We request get connected from node 1") {
+      auto nodes = g.GetConnected(1);
+
+      THEN("There should be no nodes") {
+        REQUIRE(nodes.size() == 0);
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes which only have edges to itself") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+
+    WHEN("We request the nodes") {
+      auto nodes = g.GetNodes();
+      THEN("There should be three nodes (1,2,3,)") {
+        REQUIRE(nodes.size() == 3);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "2");
+        REQUIRE(nodes[2] == "3");
+      }
+    }
+
+    WHEN("We request get connected from node 1") {
+      auto nodes = g.GetConnected("1");
+
+      THEN("There should be 1 nodes") {
+        REQUIRE(nodes.size() == 1);
+        REQUIRE(nodes[0] == "1");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes and node 1 has many edges to other nodes") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+    g.InsertEdge("1", "2", 3);
+    g.InsertEdge("1", "3", 3);
+    g.InsertEdge("1", "3", 2);
+    g.InsertEdge("1", "3", 4);
+
+    WHEN("We request the nodes") {
+      auto nodes = g.GetNodes();
+      THEN("There should be three nodes (1,2,3,)") {
+        REQUIRE(nodes.size() == 3);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "2");
+        REQUIRE(nodes[2] == "3");
+      }
+    }
+
+    WHEN("We request get connected from node 1") {
+      auto nodes = g.GetConnected("1");
+
+      THEN("There should be 3 nodes") {
+        REQUIRE(nodes.size() == 3);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "2");
+        REQUIRE(nodes[2] == "3");
+      }
+    }
+
+    WHEN("We request the weights from node 1 to 3") {
+      auto nodes = g.GetWeights("1", "3");
+
+      THEN("There should be 3 nodes") {
+        REQUIRE(nodes.size() == 3);
+        REQUIRE(nodes[0] == 2);
+        REQUIRE(nodes[1] == 3);
+        REQUIRE(nodes[2] == 4);
+      }
+    }
+  }
+}
+
+
+SCENARIO("Graphs can be cleared") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "");
+    g.Clear();
+    os << g;
+    REQUIRE(os.str() == "");
+  }
+
+  GIVEN("A graph with one node") {
+    gdwg::Graph<int, int> g{1};
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "1 (\n)\n");
+    g.Clear();
+    auto os2 = std::ostringstream();
+    os2 << g;
+    REQUIRE(os2.str() == "");
+  }
+
+  GIVEN("A graph with 3 nodes which only have edges to itself") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == R"&(1 (
+  1 | 1
+)
+2 (
+  2 | 2
+)
+3 (
+  3 | 3
+)
+)&");
+    g.Clear();
+    auto os2 = std::ostringstream();
+    os2 << g;
+    REQUIRE(os2.str() == "");
+  }
+}
+
+// Test removing nodes (erase/delete)
+SCENARIO("Graphs can have nodes/edges removed") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "");
+
+    WHEN("We try to remove some node") {
+      auto ret = g.DeleteNode(0);
+      THEN("the delete should've returned false (since the node doesnt exist") {
+        REQUIRE(ret == false);
+      }
+    }
+  }
+
+  GIVEN("A graph with one node") {
+    gdwg::Graph<int, int> g{1};
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "1 (\n)\n");
+
+    WHEN("We try to delete this (1)") {
+      auto ret = g.DeleteNode(1);
+      THEN("There should be no nodes left and ret should be true") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 0);
+      }
+    }
+
+    WHEN("We try to delete an edge that doesn't exist") {
+      auto ret = g.erase(1, 2, 1);
+
+      THEN("There should be 1 node and the return should be false") {
+        REQUIRE(ret == false);
+        REQUIRE(g.GetNodes().size() == 1);
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes which only have edges to itself") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+
+    WHEN("We delete node 1") {
+      auto ret = g.DeleteNode("1");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (2,3)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "2");
+        REQUIRE(nodes[1] == "3");
+      }
+    }
+
+    WHEN("We delete node 2") {
+      auto ret = g.DeleteNode("2");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (1,3)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "3");
+      }
+    }
+
+    WHEN("We delete node 3") {
+      auto ret = g.DeleteNode("3");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (1,2)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "2");
+      }
+    }
+  }
+
+  GIVEN("A graph with 3 nodes and node 1 has many edges to other nodes") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+    g.InsertEdge("1", "2", 3);
+    g.InsertEdge("1", "3", 3);
+    g.InsertEdge("1", "3", 2);
+    g.InsertEdge("1", "3", 4);
+
+    WHEN("We delete node 1") {
+      auto ret = g.DeleteNode("1");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (2,3)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "2");
+        REQUIRE(nodes[1] == "3");
+      }
+    }
+
+    WHEN("We delete node 2") {
+      auto ret = g.DeleteNode("2");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (1,3)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "3");
+      }
+    }
+
+    WHEN("We delete node 3") {
+      auto ret = g.DeleteNode("3");
+      auto nodes = g.GetNodes();
+      THEN("There should be two nodes (1,2)") {
+        REQUIRE(ret == true);
+        REQUIRE(g.GetNodes().size() == 2);
+        REQUIRE(nodes[0] == "1");
+        REQUIRE(nodes[1] == "2");
+      }
+    }
+
+    WHEN("We delete the edge 1->3 (4)") {
+      auto ret = g.erase("1", "3", 4);
+      THEN("This should successfully delete this edge") {
+        REQUIRE(ret == true);
+        auto weights = g.GetWeights("1",  "3");
+        REQUIRE(weights.size() == 2);
+      }
+
+      AND_WHEN("We try delete it again") {
+        auto ret = g.erase("1", "3", 4);
+        THEN("The graph will not be able to delete this edge") {
+          REQUIRE(ret == false);
+          auto weights = g.GetWeights("1",  "3");
+          REQUIRE(weights.size() == 2);
+        }
+      }
+    }
+  }
+}
+
+
+// Testing iterators
+
+SCENARIO("Graphs can be cleared") {
+  GIVEN("An empty graph") {
+    gdwg::Graph<int, int> g;
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "");
+    g.Clear();
+    os << g;
+    REQUIRE(os.str() == "");
+  }
+
+  GIVEN("A graph with one node") {
+    gdwg::Graph<int, int> g{1};
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == "1 (\n)\n");
+    g.Clear();
+    auto os2 = std::ostringstream();
+    os2 << g;
+    REQUIRE(os2.str() == "");
+  }
+
+  GIVEN("A graph with 3 nodes which only have edges to itself") {
+    gdwg::Graph<std::string, int> g{"1", "2", "3"};
+
+    g.InsertEdge("1", "1", 1);
+    g.InsertEdge("2", "2", 2);
+    g.InsertEdge("3", "3", 3);
+
+    auto os = std::ostringstream();
+    os << g;
+    REQUIRE(os.str() == R"&(1 (
+  1 | 1
+)
+2 (
+  2 | 2
+)
+3 (
+  3 | 3
+)
+)&");
+    g.Clear();
+    auto os2 = std::ostringstream();
+    os2 << g;
+    REQUIRE(os2.str() == "");
   }
 }
